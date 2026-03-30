@@ -1,13 +1,2372 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>vintage</title>
-  </head>
-  <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.jsx"></script>
-  </body>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NovaOS 98 — Tech Fest 1998</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=VT323&family=Share+Tech+Mono&family=Press+Start+2P&display=swap');
+
+:root {
+  --teal: #008080;
+  --teal-dark: #006060;
+  --teal-light: #00a0a0;
+  --win-gray: #c0c0c0;
+  --win-gray-dark: #808080;
+  --win-gray-darker: #404040;
+  --win-gray-light: #dfdfdf;
+  --win-white: #ffffff;
+  --win-black: #000000;
+  --win-blue: #000080;
+  --win-blue-title: linear-gradient(90deg, #000080 0%, #1084d0 100%);
+  --win-blue-inactive: linear-gradient(90deg, #808080 0%, #b0b0b0 100%);
+  --accent-yellow: #ffff00;
+  --accent-red: #ff4444;
+  --green-terminal: #00ff41;
+  --scanline-opacity: 0.04;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+/* ── BOOT SCREEN ── */
+#boot-screen {
+  position: fixed; inset: 0; z-index: 9999;
+  background: #000;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  font-family: 'VT323', monospace;
+  color: var(--green-terminal);
+  padding: 40px;
+}
+
+.boot-bios {
+  width: 100%; max-width: 700px;
+  font-size: 16px;
+  line-height: 1.6;
+  color: #aaa;
+  margin-bottom: 30px;
+  opacity: 0.7;
+}
+
+.boot-bios span { display: block; }
+
+.boot-logo {
+  font-family: 'Press Start 2P', monospace;
+  font-size: clamp(20px, 4vw, 36px);
+  color: var(--green-terminal);
+  text-shadow: 0 0 20px var(--green-terminal), 0 0 40px rgba(0,255,65,0.4);
+  letter-spacing: 4px;
+  margin-bottom: 20px;
+  animation: textFlicker 3s infinite;
+}
+
+@keyframes textFlicker {
+  0%,95%,100% { opacity: 1; }
+  96% { opacity: 0.8; }
+  97% { opacity: 1; }
+  98% { opacity: 0.6; }
+}
+
+.boot-status {
+  font-size: 18px;
+  color: #0ff;
+  min-height: 26px;
+  margin-bottom: 16px;
+  text-shadow: 0 0 8px #0ff;
+}
+
+.boot-bar-wrap {
+  width: 100%; max-width: 500px;
+  height: 22px;
+  border: 2px solid var(--green-terminal);
+  background: #001a00;
+  position: relative;
+  box-shadow: 0 0 12px rgba(0,255,65,0.4);
+}
+
+.boot-bar-fill {
+  height: 100%;
+  background: repeating-linear-gradient(
+    90deg,
+    var(--green-terminal) 0px,
+    var(--green-terminal) 12px,
+    #005500 12px,
+    #005500 14px
+  );
+  width: 0%;
+  transition: width 0.12s ease;
+  box-shadow: 0 0 8px var(--green-terminal);
+}
+
+.boot-percent {
+  position: absolute;
+  right: -50px; top: 0;
+  color: var(--green-terminal);
+  font-size: 16px;
+  line-height: 22px;
+}
+
+.boot-log {
+  margin-top: 20px;
+  width: 100%; max-width: 700px;
+  font-size: 13px;
+  color: #555;
+  line-height: 1.7;
+  height: 80px;
+  overflow: hidden;
+}
+
+/* ── DESKTOP ── */
+#desktop {
+  width: 100vw; height: 100vh;
+  background-color: var(--teal);
+  background-image:
+    radial-gradient(circle at 20% 20%, rgba(0,160,160,0.3) 0%, transparent 50%),
+    radial-gradient(circle at 80% 80%, rgba(0,60,60,0.4) 0%, transparent 50%),
+    repeating-linear-gradient(0deg, transparent, transparent 31px, rgba(0,0,0,0.07) 31px, rgba(0,0,0,0.07) 32px),
+    repeating-linear-gradient(90deg, transparent, transparent 31px, rgba(0,0,0,0.07) 31px, rgba(0,0,0,0.07) 32px);
+  overflow: hidden;
+  position: relative;
+  display: none;
+}
+
+/* ── SCANLINES + CRT ── */
+#desktop::before {
+  content: '';
+  position: fixed; inset: 0; z-index: 9000;
+  pointer-events: none;
+  background: repeating-linear-gradient(
+    0deg,
+    rgba(0,0,0,var(--scanline-opacity)) 0px,
+    rgba(0,0,0,var(--scanline-opacity)) 1px,
+    transparent 1px,
+    transparent 2px
+  );
+}
+
+#desktop::after {
+  content: '';
+  position: fixed; inset: 0; z-index: 9001;
+  pointer-events: none;
+  background: radial-gradient(ellipse at center, transparent 60%, rgba(0,0,0,0.5) 100%);
+}
+
+/* ── HEADER BANNER ── */
+.desktop-header {
+  text-align: center;
+  padding: 14px 20px 10px;
+  position: relative;
+  z-index: 10;
+}
+
+.desktop-title {
+  font-family: 'Press Start 2P', monospace;
+  font-size: clamp(14px, 2.5vw, 26px);
+  color: #fff;
+  text-shadow:
+    3px 3px 0 #000,
+    -1px -1px 0 #000,
+    0 0 20px rgba(255,255,100,0.6),
+    0 0 40px rgba(255,200,0,0.3);
+  letter-spacing: 3px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+}
+
+.title-bolt {
+  display: inline-block;
+  font-size: 1.3em;
+  animation: boltPulse 1.5s ease-in-out infinite;
+  filter: drop-shadow(0 0 8px #ffff00);
+}
+
+@keyframes boltPulse {
+  0%,100% { transform: scale(1); filter: drop-shadow(0 0 8px #ffff00); }
+  50% { transform: scale(1.2); filter: drop-shadow(0 0 20px #ffff00); }
+}
+
+.desktop-subtitle {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 11px;
+  color: rgba(255,255,255,0.75);
+  letter-spacing: 4px;
+  margin-top: 6px;
+  text-transform: uppercase;
+}
+
+/* ── ICONS ── */
+.icons-area {
+  position: absolute;
+  top: 100px; left: 18px;
+  display: flex; flex-direction: column;
+  gap: 8px;
+  z-index: 100;
+}
+
+.icon {
+  display: flex; flex-direction: column;
+  align-items: center;
+  width: 74px;
+  cursor: pointer;
+  padding: 5px;
+  border: 1px solid transparent;
+  border-radius: 2px;
+  transition: background 0.1s;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.icon:hover {
+  background: rgba(0,0,128,0.35);
+  border-color: rgba(255,255,255,0.5);
+}
+
+.icon:active { transform: scale(0.95); }
+
+.icon.selected {
+  background: rgba(0,0,128,0.5);
+  border-color: rgba(255,255,255,0.7);
+}
+
+.icon-img {
+  width: 40px; height: 40px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 32px;
+  filter: drop-shadow(1px 2px 3px rgba(0,0,0,0.6));
+  transition: transform 0.15s;
+}
+
+.icon:hover .icon-img { transform: translateY(-2px); }
+
+.icon-label {
+  font-family: 'VT323', monospace;
+  font-size: 14px;
+  color: #fff;
+  text-align: center;
+  text-shadow: 1px 1px 2px #000, -1px -1px 2px #000, 1px -1px 2px #000, -1px 1px 2px #000;
+  margin-top: 3px;
+  line-height: 1.2;
+  word-break: break-word;
+}
+
+/* ── WINDOWS ── */
+.win-window {
+  position: absolute;
+  min-width: 320px;
+  background: var(--win-gray);
+  border-top: 2px solid var(--win-white);
+  border-left: 2px solid var(--win-white);
+  border-right: 2px solid var(--win-gray-darker);
+  border-bottom: 2px solid var(--win-gray-darker);
+  box-shadow: 3px 3px 12px rgba(0,0,0,0.45), inset 1px 1px 0 rgba(255,255,255,0.9);
+  display: none;
+  z-index: 200;
+  user-select: none;
+}
+
+.win-window.active { z-index: 500; }
+
+.win-titlebar {
+  background: var(--win-blue-title);
+  padding: 3px 4px;
+  display: flex;
+  align-items: center;
+  cursor: move;
+  gap: 5px;
+  position: relative;
+}
+
+.win-window:not(.active) .win-titlebar {
+  background: var(--win-blue-inactive);
+}
+
+.win-title-icon { font-size: 14px; flex-shrink: 0; }
+
+.win-title-text {
+  font-family: 'VT323', monospace;
+  font-size: 15px;
+  color: #fff;
+  flex: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-weight: normal;
+  letter-spacing: 0.5px;
+}
+
+.win-controls {
+  display: flex; gap: 2px; flex-shrink: 0;
+}
+
+.win-btn {
+  width: 18px; height: 16px;
+  background: var(--win-gray);
+  border-top: 1px solid var(--win-white);
+  border-left: 1px solid var(--win-white);
+  border-right: 1px solid var(--win-gray-darker);
+  border-bottom: 1px solid var(--win-gray-darker);
+  font-size: 9px;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'VT323', monospace;
+  line-height: 1;
+  color: #000;
+  transition: filter 0.1s;
+}
+
+.win-btn:hover { filter: brightness(1.15); }
+.win-btn:active {
+  border-top: 1px solid var(--win-gray-darker);
+  border-left: 1px solid var(--win-gray-darker);
+  border-right: 1px solid var(--win-white);
+  border-bottom: 1px solid var(--win-white);
+}
+
+.win-btn.close-btn:hover { background: #ff4444; color: #fff; }
+.win-btn.max-btn:hover { background: #4488ff; color: #fff; }
+
+/* ── MENUBAR ── */
+.win-menubar {
+  background: var(--win-gray);
+  padding: 2px 4px;
+  display: flex; gap: 2px;
+  border-bottom: 1px solid var(--win-gray-dark);
+}
+
+.menu-item {
+  font-family: 'VT323', monospace;
+  font-size: 14px;
+  padding: 1px 8px;
+  cursor: pointer;
+  border: 1px solid transparent;
+}
+
+.menu-item:hover {
+  background: var(--win-blue);
+  color: #fff;
+  border-color: var(--win-gray-dark);
+}
+
+/* ── WINDOW CONTENT ── */
+.win-body {
+  padding: 10px;
+  overflow-y: auto;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 13px;
+  color: #000;
+}
+
+/* ── ABOUT WINDOW ── */
+#window-about {
+  width: min(600px, 90vw);
+  top: 80px; left: 90px;
+}
+
+#window-about .win-body { max-height: 480px; }
+
+.about-hero {
+  background: linear-gradient(135deg, #000080 0%, #004080 40%, #000060 100%);
+  border: 2px inset var(--win-gray-dark);
+  padding: 18px;
+  text-align: center;
+  margin-bottom: 10px;
+  position: relative;
+  overflow: hidden;
+}
+
+.about-hero::before {
+  content: '';
+  position: absolute; inset: 0;
+  background: repeating-linear-gradient(
+    45deg,
+    transparent, transparent 4px,
+    rgba(255,255,255,0.03) 4px, rgba(255,255,255,0.03) 5px
+  );
+}
+
+.about-hero-title {
+  font-family: 'Press Start 2P', monospace;
+  font-size: clamp(10px, 2vw, 16px);
+  color: #fff;
+  text-shadow: 0 0 10px #0ff, 2px 2px 0 #000;
+  letter-spacing: 2px;
+  position: relative;
+}
+
+.about-hero-sub {
+  font-family: 'VT323', monospace;
+  font-size: 17px;
+  color: #0ff;
+  margin-top: 6px;
+  text-shadow: 0 0 6px #0ff;
+  letter-spacing: 3px;
+  position: relative;
+}
+
+.info-section-head {
+  font-family: 'VT323', monospace;
+  font-size: 17px;
+  background: #000080;
+  color: #fff;
+  padding: 2px 8px;
+  margin: 8px 0 5px;
+  border-left: 4px solid #0ff;
+  letter-spacing: 1px;
+}
+
+.info-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+.info-table th {
+  background: #000080;
+  color: #fff;
+  padding: 4px 8px;
+  text-align: left;
+  font-weight: normal;
+  font-family: 'VT323', monospace;
+  font-size: 14px;
+  letter-spacing: 1px;
+}
+
+.info-table td {
+  padding: 4px 8px;
+  border-bottom: 1px solid #c0c0c0;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 12px;
+}
+
+.info-table tr:nth-child(even) td { background: #e8e8e8; }
+.info-table tr:hover td { background: #ccddff; }
+
+.info-table td:first-child {
+  font-weight: bold;
+  color: #000060;
+  white-space: nowrap;
+}
+
+.td-icon { margin-right: 5px; font-size: 14px; }
+
+.speaker-card {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 8px;
+  border: 1px solid #b0b0b0;
+  margin-bottom: 4px;
+  background: linear-gradient(90deg, #f0f0ff, #fff);
+  border-left: 3px solid #000080;
+}
+
+.speaker-avatar {
+  width: 34px; height: 34px;
+  background: #000080;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 18px;
+  flex-shrink: 0;
+  border: 2px solid #c0c0c0;
+}
+
+.speaker-info { flex: 1; }
+.speaker-name {
+  font-family: 'VT323', monospace;
+  font-size: 16px;
+  color: #000080;
+  font-weight: bold;
+}
+.speaker-topic {
+  font-size: 11px;
+  color: #444;
+  font-family: 'Share Tech Mono', monospace;
+}
+
+.speaker-day {
+  font-family: 'VT323', monospace;
+  font-size: 13px;
+  background: #000080;
+  color: #fff;
+  padding: 2px 7px;
+  border-radius: 2px;
+}
+
+.audience-list {
+  list-style: none;
+  padding: 4px 0;
+}
+
+.audience-list li {
+  padding: 3px 6px;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 12px;
+  border-bottom: 1px dotted #c0c0c0;
+  color: #002;
+}
+
+.audience-list li::before {
+  content: '▶ ';
+  color: #000080;
+}
+
+/* ── EVENTS WINDOW ── */
+#window-events {
+  width: min(500px, 90vw);
+  top: 110px; left: 160px;
+}
+
+#window-events .win-body { max-height: 420px; }
+
+.event-card {
+  border: 2px solid #c0c0c0;
+  border-top-color: #fff;
+  border-left-color: #fff;
+  border-right-color: #808080;
+  border-bottom-color: #808080;
+  margin-bottom: 8px;
+  overflow: hidden;
+  transition: transform 0.15s, box-shadow 0.15s;
+}
+
+.event-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 3px 3px 8px rgba(0,0,0,0.25);
+}
+
+.event-card-header {
+  background: linear-gradient(90deg, #000080, #1060b0);
+  padding: 5px 10px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.event-card-title {
+  font-family: 'VT323', monospace;
+  font-size: 17px;
+  color: #fff;
+  flex: 1;
+}
+
+.event-badge {
+  font-family: 'VT323', monospace;
+  font-size: 13px;
+  padding: 1px 8px;
+  border-radius: 2px;
+  white-space: nowrap;
+  font-weight: bold;
+}
+
+.badge-workshop { background: #ff8800; color: #fff; }
+.badge-keynote  { background: #008800; color: #fff; }
+.badge-contest  { background: #880088; color: #fff; }
+.badge-social   { background: #cc0000; color: #fff; }
+.badge-demo     { background: #006688; color: #fff; }
+
+.event-card-body {
+  padding: 8px 10px;
+  background: #f5f5f5;
+  font-size: 12px;
+  font-family: 'Share Tech Mono', monospace;
+  color: #333;
+}
+
+.event-meta {
+  display: flex; gap: 14px;
+  flex-wrap: wrap;
+  margin-top: 5px;
+}
+
+.event-meta-item {
+  display: flex; align-items: center; gap: 4px;
+  font-size: 11px;
+  color: #000080;
+  font-family: 'VT323', monospace;
+  font-size: 14px;
+}
+
+/* ── REGISTER WINDOW ── */
+#window-register {
+  width: min(440px, 92vw);
+  top: 100px; left: 230px;
+}
+
+#window-register .win-body {
+  padding: 0;
+  max-height: 480px;
+}
+
+.notepad-toolbar {
+  background: var(--win-gray);
+  padding: 3px 6px;
+  border-bottom: 1px solid #808080;
+  display: flex; gap: 4px;
+}
+
+.np-btn {
+  font-family: 'VT323', monospace;
+  font-size: 13px;
+  padding: 1px 8px;
+  background: var(--win-gray);
+  border-top: 1px solid #fff;
+  border-left: 1px solid #fff;
+  border-right: 1px solid #808080;
+  border-bottom: 1px solid #808080;
+  cursor: pointer;
+}
+
+.np-btn:active {
+  border-top: 1px solid #808080;
+  border-left: 1px solid #808080;
+  border-right: 1px solid #fff;
+  border-bottom: 1px solid #fff;
+}
+
+.notepad-area {
+  background: #fff;
+  padding: 12px 14px;
+  font-family: 'VT323', monospace;
+  font-size: 15px;
+  overflow-y: auto;
+  max-height: 400px;
+}
+
+.np-title {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 9px;
+  color: #000080;
+  margin-bottom: 12px;
+  letter-spacing: 1px;
+  border-bottom: 2px solid #000080;
+  padding-bottom: 8px;
+}
+
+.form-row {
+  margin-bottom: 10px;
+}
+
+.form-label {
+  display: block;
+  font-family: 'VT323', monospace;
+  font-size: 15px;
+  color: #000;
+  margin-bottom: 3px;
+}
+
+.form-input, .form-select, .form-textarea {
+  width: 100%;
+  border: 2px inset #c0c0c0;
+  background: #fff;
+  padding: 4px 6px;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 12px;
+  outline: none;
+}
+
+.form-input:focus, .form-select:focus, .form-textarea:focus {
+  border-color: #000080;
+  box-shadow: 0 0 0 1px #000080;
+}
+
+.form-textarea { resize: vertical; min-height: 60px; }
+
+.checkbox-row {
+  display: flex; align-items: center; gap: 8px;
+  margin-bottom: 8px;
+  cursor: pointer;
+}
+
+.checkbox-row input { cursor: pointer; }
+
+.checkbox-row span {
+  font-family: 'VT323', monospace;
+  font-size: 14px;
+}
+
+.btn-submit {
+  display: block;
+  width: 100%;
+  padding: 8px;
+  background: var(--win-gray);
+  border-top: 2px solid var(--win-white);
+  border-left: 2px solid var(--win-white);
+  border-right: 2px solid var(--win-gray-darker);
+  border-bottom: 2px solid var(--win-gray-darker);
+  font-family: 'VT323', monospace;
+  font-size: 18px;
+  cursor: pointer;
+  margin-top: 10px;
+  letter-spacing: 1px;
+  transition: filter 0.1s;
+}
+
+.btn-submit:hover { filter: brightness(1.08); }
+
+.btn-submit:active {
+  border-top: 2px solid var(--win-gray-darker);
+  border-left: 2px solid var(--win-gray-darker);
+  border-right: 2px solid var(--win-white);
+  border-bottom: 2px solid var(--win-white);
+}
+
+/* ── SUCCESS DIALOG ── */
+#success-dialog {
+  position: fixed;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 9000;
+  display: none;
+  width: 340px;
+  background: var(--win-gray);
+  border-top: 2px solid #fff;
+  border-left: 2px solid #fff;
+  border-right: 2px solid #404040;
+  border-bottom: 2px solid #404040;
+  box-shadow: 4px 4px 16px rgba(0,0,0,0.6);
+  animation: dialogBounce 0.25s ease;
+}
+
+@keyframes dialogBounce {
+  0% { transform: translate(-50%, -50%) scale(0.7); opacity: 0; }
+  100% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+}
+
+.dialog-body {
+  padding: 16px;
+  text-align: center;
+}
+
+.dialog-icon { font-size: 40px; margin-bottom: 8px; }
+
+.dialog-msg {
+  font-family: 'VT323', monospace;
+  font-size: 18px;
+  color: #000;
+  line-height: 1.5;
+  margin-bottom: 14px;
+}
+
+.dialog-ok {
+  padding: 4px 32px;
+  background: var(--win-gray);
+  border-top: 2px solid #fff;
+  border-left: 2px solid #fff;
+  border-right: 2px solid #404040;
+  border-bottom: 2px solid #404040;
+  font-family: 'VT323', monospace;
+  font-size: 16px;
+  cursor: pointer;
+  min-width: 80px;
+}
+
+.dialog-ok:hover { background: #e0e0f0; }
+
+/* ── TOAST ── */
+.toast {
+  position: fixed;
+  bottom: 44px; right: 10px;
+  z-index: 8000;
+  background: var(--win-gray);
+  border-top: 1px solid #fff;
+  border-left: 1px solid #fff;
+  border-right: 1px solid #404040;
+  border-bottom: 1px solid #404040;
+  padding: 6px 12px;
+  display: flex; align-items: center; gap: 8px;
+  font-family: 'VT323', monospace;
+  font-size: 15px;
+  min-width: 220px;
+  box-shadow: 2px 2px 8px rgba(0,0,0,0.35);
+  animation: toastIn 0.3s ease;
+  transition: opacity 0.4s;
+}
+
+@keyframes toastIn {
+  from { transform: translateX(120%); opacity: 0; }
+  to { transform: translateX(0); opacity: 1; }
+}
+
+.toast-icon { font-size: 18px; }
+
+/* ── TASKBAR ── */
+#taskbar {
+  position: fixed;
+  bottom: 0; left: 0; right: 0;
+  height: 36px;
+  background: var(--win-gray);
+  border-top: 2px solid var(--win-white);
+  display: flex; align-items: center;
+  z-index: 1000;
+  padding: 0 4px;
+  gap: 4px;
+  box-shadow: 0 -1px 0 var(--win-gray-darker);
+}
+
+/* ── START BUTTON ── */
+#start-btn {
+  height: 28px;
+  padding: 0 10px;
+  display: flex; align-items: center; gap: 5px;
+  background: var(--win-gray);
+  border-top: 2px solid var(--win-white);
+  border-left: 2px solid var(--win-white);
+  border-right: 2px solid var(--win-gray-darker);
+  border-bottom: 2px solid var(--win-gray-darker);
+  cursor: pointer;
+  font-family: 'Press Start 2P', monospace;
+  font-size: 9px;
+  font-weight: bold;
+  letter-spacing: 0.5px;
+  white-space: nowrap;
+  user-select: none;
+  flex-shrink: 0;
+  transition: filter 0.1s;
+}
+
+#start-btn:hover { filter: brightness(1.07); }
+
+#start-btn.active, #start-btn:active {
+  border-top: 2px solid var(--win-gray-darker);
+  border-left: 2px solid var(--win-gray-darker);
+  border-right: 2px solid var(--win-white);
+  border-bottom: 2px solid var(--win-white);
+}
+
+.start-logo {
+  font-size: 16px;
+  filter: drop-shadow(1px 1px 0 rgba(0,0,0,0.3));
+}
+
+.taskbar-divider {
+  width: 2px; height: 28px;
+  background: linear-gradient(#808080, #fff);
+  margin: 0 2px;
+  flex-shrink: 0;
+}
+
+/* ── TASKBAR APP BUTTONS ── */
+.taskbar-app-btn {
+  height: 26px;
+  padding: 0 8px;
+  background: var(--win-gray);
+  border-top: 1px solid var(--win-white);
+  border-left: 1px solid var(--win-white);
+  border-right: 1px solid var(--win-gray-darker);
+  border-bottom: 1px solid var(--win-gray-darker);
+  font-family: 'VT323', monospace;
+  font-size: 13px;
+  cursor: pointer;
+  display: flex; align-items: center; gap: 5px;
+  min-width: 100px;
+  max-width: 150px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  transition: filter 0.1s;
+}
+
+.taskbar-app-btn:hover { filter: brightness(1.07); }
+
+.taskbar-app-btn.active {
+  border-top: 1px solid var(--win-gray-darker);
+  border-left: 1px solid var(--win-gray-darker);
+  border-right: 1px solid var(--win-white);
+  border-bottom: 1px solid var(--win-white);
+  background: linear-gradient(#c0c0c0, #d8d8d8);
+}
+
+/* ── CLOCK + TRAY ── */
+.taskbar-right {
+  margin-left: auto;
+  display: flex; align-items: center; gap: 6px;
+  flex-shrink: 0;
+}
+
+.tray-icon {
+  font-size: 14px; cursor: pointer;
+  opacity: 0.8;
+  transition: opacity 0.1s;
+}
+
+.tray-icon:hover { opacity: 1; }
+
+#taskbar-clock {
+  border: 1px inset #808080;
+  background: var(--win-gray);
+  padding: 2px 8px;
+  font-family: 'VT323', monospace;
+  font-size: 15px;
+  min-width: 70px;
+  text-align: center;
+  cursor: default;
+}
+
+/* ── START MENU ── */
+#start-menu {
+  position: fixed;
+  bottom: 36px; left: 0;
+  width: 220px;
+  background: var(--win-gray);
+  border-top: 2px solid var(--win-white);
+  border-left: 2px solid var(--win-white);
+  border-right: 2px solid var(--win-gray-darker);
+  border-bottom: 2px solid var(--win-gray-darker);
+  box-shadow: 3px 3px 10px rgba(0,0,0,0.4);
+  display: none;
+  z-index: 2000;
+  flex-direction: row;
+  overflow: hidden;
+}
+
+.start-sidebar {
+  width: 28px;
+  background: linear-gradient(180deg, #000080 0%, #1084d0 100%);
+  display: flex; align-items: flex-end; justify-content: center;
+  padding-bottom: 8px;
+  flex-shrink: 0;
+}
+
+.start-sidebar-text {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 8px;
+  color: rgba(255,255,255,0.85);
+  writing-mode: vertical-rl;
+  transform: rotate(180deg);
+  letter-spacing: 2px;
+  text-shadow: 1px 1px 0 rgba(0,0,0,0.4);
+}
+
+.start-items {
+  flex: 1;
+  padding: 2px 0;
+}
+
+.start-item {
+  display: flex; align-items: center; gap: 8px;
+  padding: 5px 10px;
+  font-family: 'VT323', monospace;
+  font-size: 15px;
+  cursor: pointer;
+  transition: background 0.1s, color 0.1s;
+}
+
+.start-item:hover {
+  background: var(--win-blue);
+  color: #fff;
+}
+
+.start-item-icon { font-size: 16px; flex-shrink: 0; }
+
+.start-separator {
+  height: 1px;
+  background: linear-gradient(90deg, #808080, #fff);
+  margin: 3px 8px;
+}
+
+/* ── SCREENSAVER ── */
+#screensaver {
+  position: fixed; inset: 0; z-index: 8500;
+  background: #000;
+  display: none;
+  cursor: none;
+}
+
+#screensaver canvas {
+  width: 100%; height: 100%;
+}
+
+/* ── SHUTDOWN ── */
+#shutdown-screen {
+  position: fixed; inset: 0; z-index: 9990;
+  background: #000;
+  display: none;
+  align-items: center; justify-content: center;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.shutdown-box {
+  background: var(--win-gray);
+  border-top: 2px solid #fff;
+  border-left: 2px solid #fff;
+  border-right: 2px solid #404040;
+  border-bottom: 2px solid #404040;
+  padding: 24px 40px;
+  text-align: center;
+  width: 360px;
+}
+
+.shutdown-title {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 10px;
+  color: #000080;
+  margin-bottom: 14px;
+}
+
+.shutdown-icon { font-size: 48px; margin-bottom: 12px; }
+
+.shutdown-msg {
+  font-family: 'VT323', monospace;
+  font-size: 18px;
+  color: #000;
+  line-height: 1.6;
+}
+
+/* ── RIGHT-CLICK MENU ── */
+#context-menu {
+  position: fixed;
+  z-index: 3000;
+  background: var(--win-gray);
+  border-top: 1px solid #fff;
+  border-left: 1px solid #fff;
+  border-right: 1px solid #404040;
+  border-bottom: 1px solid #404040;
+  box-shadow: 2px 2px 6px rgba(0,0,0,0.4);
+  min-width: 160px;
+  display: none;
+  font-family: 'VT323', monospace;
+  font-size: 15px;
+}
+
+.ctx-item {
+  padding: 4px 20px;
+  cursor: pointer;
+  display: flex; align-items: center; gap: 8px;
+  border-bottom: none;
+}
+
+.ctx-item:hover {
+  background: var(--win-blue);
+  color: #fff;
+}
+
+.ctx-sep {
+  height: 1px;
+  background: linear-gradient(90deg, #808080, #fff);
+  margin: 3px 6px;
+}
+
+/* ── SCROLLBAR ── */
+::-webkit-scrollbar { width: 16px; height: 16px; }
+::-webkit-scrollbar-track { background: var(--win-gray-light); }
+::-webkit-scrollbar-thumb {
+  background: var(--win-gray);
+  border-top: 1px solid #fff;
+  border-left: 1px solid #fff;
+  border-right: 1px solid #808080;
+  border-bottom: 1px solid #808080;
+}
+::-webkit-scrollbar-button {
+  background: var(--win-gray);
+  border-top: 1px solid #fff;
+  border-left: 1px solid #fff;
+  border-right: 1px solid #808080;
+  border-bottom: 1px solid #808080;
+  height: 16px; width: 16px;
+  display: block;
+}
+
+/* ── ANIMATIONS ── */
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+@keyframes slideUp {
+  from { transform: translateY(20px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+.win-window.opening {
+  animation: windowOpen 0.18s ease;
+}
+
+@keyframes windowOpen {
+  0% { transform: scale(0.85); opacity: 0; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+/* ── CURSOR BLINK ── */
+.blink { animation: blink 1s step-end infinite; }
+@keyframes blink { 0%,100% { opacity: 1; } 50% { opacity: 0; } }
+
+/* ── PIXEL DUST ── */
+.pixel-dust {
+  position: fixed; pointer-events: none; z-index: 9999;
+  width: 4px; height: 4px;
+  background: var(--green-terminal);
+  border-radius: 0;
+}
+
+/* ── ERROR DIALOG ── */
+#error-dialog {
+  position: fixed;
+  top: 30%; left: 50%;
+  transform: translateX(-50%);
+  z-index: 8900;
+  width: 360px;
+  background: var(--win-gray);
+  border-top: 2px solid #fff;
+  border-left: 2px solid #fff;
+  border-right: 2px solid #404040;
+  border-bottom: 2px solid #404040;
+  box-shadow: 4px 4px 16px rgba(0,0,0,0.6);
+  display: none;
+  animation: dialogBounce 0.2s ease;
+}
+
+.error-body {
+  padding: 16px;
+  display: flex; gap: 14px; align-items: flex-start;
+}
+
+.error-icon { font-size: 36px; flex-shrink: 0; }
+
+.error-msg {
+  font-family: 'VT323', monospace;
+  font-size: 16px;
+  color: #000;
+  line-height: 1.5;
+}
+
+.error-buttons {
+  display: flex; justify-content: center; gap: 8px;
+  padding: 0 16px 12px;
+}
+
+.error-btn {
+  padding: 4px 18px;
+  background: var(--win-gray);
+  border-top: 2px solid #fff;
+  border-left: 2px solid #fff;
+  border-right: 2px solid #404040;
+  border-bottom: 2px solid #404040;
+  font-family: 'VT323', monospace;
+  font-size: 15px;
+  cursor: pointer;
+  min-width: 75px;
+  text-align: center;
+}
+
+.error-btn:hover { filter: brightness(1.1); }
+
+/* ── RESIZE HANDLE ── */
+.resize-handle {
+  position: absolute;
+  bottom: 0; right: 0;
+  width: 16px; height: 16px;
+  cursor: se-resize;
+  font-size: 12px;
+  display: flex; align-items: center; justify-content: center;
+  color: #808080;
+  user-select: none;
+}
+
+/* ══════════════════════════════════════════
+   MOBILE RESPONSIVE — ≤ 640px
+   Windows become stacked scrollable cards
+   Icons become horizontal dock at top
+══════════════════════════════════════════ */
+@media (max-width: 640px) {
+
+  /* Boot screen — bigger text, tighter padding */
+  #boot-screen { padding: 20px 16px; }
+  .boot-bios { font-size: 12px; margin-bottom: 16px; }
+  .boot-logo { font-size: clamp(13px, 5vw, 22px); letter-spacing: 2px; }
+  .boot-status { font-size: 15px; }
+  .boot-bar-wrap { max-width: 90vw; }
+  .boot-percent { right: -42px; font-size: 13px; }
+  .boot-log { font-size: 11px; height: 60px; }
+
+  /* Desktop becomes scrollable on mobile */
+  #desktop {
+    height: auto;
+    min-height: 100dvh;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding-bottom: 50px;
+  }
+
+  /* Header shrinks */
+  .desktop-header { padding: 10px 12px 6px; }
+  .desktop-title {
+    font-size: clamp(9px, 3.5vw, 14px);
+    gap: 8px;
+    letter-spacing: 1px;
+  }
+  .desktop-subtitle {
+    font-size: 9px;
+    letter-spacing: 2px;
+  }
+
+  /* Icons: horizontal scrolling dock instead of vertical column */
+  .icons-area {
+    position: relative;
+    top: auto; left: auto;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 6px;
+    padding: 8px 10px;
+    width: 100%;
+    background: rgba(0,0,0,0.15);
+    border-bottom: 1px solid rgba(255,255,255,0.15);
+    border-top: 1px solid rgba(255,255,255,0.1);
+  }
+
+  .icon { width: 64px; padding: 4px; }
+  .icon-img { font-size: 26px; width: 34px; height: 34px; }
+  .icon-label { font-size: 12px; }
+
+  /* Windows: full-width stacked cards, not absolutely positioned */
+  .win-window {
+    position: relative !important;
+    left: auto !important;
+    top: auto !important;
+    width: 100% !important;
+    min-width: unset !important;
+    height: auto !important;
+    margin: 8px 0;
+    display: block !important; /* always visible on mobile */
+    box-shadow: 2px 2px 8px rgba(0,0,0,0.4);
+  }
+
+  /* Title bar — no drag cursor on mobile */
+  .win-titlebar { cursor: default; }
+  .win-title-text { font-size: 13px; }
+
+  /* Body — no max-height clipping, show all content */
+  .win-body {
+    max-height: none !important;
+    overflow-y: visible !important;
+    padding: 8px;
+  }
+
+  /* Notepad area */
+  .notepad-area { max-height: none !important; padding: 10px; }
+
+  /* About hero shrinks */
+  .about-hero { padding: 12px 10px; }
+  .about-hero-title { font-size: clamp(7px, 2.5vw, 11px); }
+  .about-hero-sub { font-size: 14px; }
+
+  /* Tables scroll horizontally */
+  .info-table { font-size: 11px; }
+  .info-table td, .info-table th { padding: 3px 5px; }
+
+  /* Speaker cards stack nicely */
+  .speaker-card { padding: 5px 6px; gap: 8px; }
+  .speaker-avatar { width: 28px; height: 28px; font-size: 15px; }
+  .speaker-name { font-size: 14px; }
+  .speaker-topic { font-size: 10px; }
+
+  /* Event cards */
+  .event-card-title { font-size: 14px; }
+  .event-card-body { font-size: 11px; }
+  .event-meta { gap: 8px; }
+  .event-meta-item { font-size: 12px; }
+
+  /* Form */
+  .np-title { font-size: 7px; }
+  .form-label { font-size: 13px; }
+  .form-input, .form-select, .form-textarea { font-size: 13px; padding: 6px; }
+  .btn-submit { font-size: 15px; padding: 10px; }
+  .checkbox-row span { font-size: 12px; }
+
+  /* Resize handle hidden on mobile */
+  .resize-handle { display: none; }
+
+  /* Window controls — bigger tap targets */
+  .win-btn { width: 22px; height: 20px; font-size: 11px; }
+
+  /* Taskbar */
+  #taskbar { height: 40px; padding: 0 6px; gap: 4px; }
+  #start-btn { font-size: 8px; padding: 0 8px; height: 30px; }
+  #taskbar-clock { font-size: 13px; padding: 2px 5px; min-width: 55px; }
+  .tray-icon { font-size: 16px; }
+
+  /* Taskbar app buttons hidden on mobile (windows always visible) */
+  #taskbar-apps { display: none; }
+
+  /* Start menu full-width on mobile */
+  #start-menu {
+    width: 100%;
+    left: 0; right: 0;
+  }
+  .start-item { font-size: 16px; padding: 8px 12px; }
+
+  /* Dialogs full-width */
+  #success-dialog, #error-dialog {
+    width: 90vw;
+    left: 5vw;
+    transform: none;
+    top: 20%;
+  }
+
+  /* Toast at bottom center */
+  .toast {
+    right: auto;
+    left: 50%;
+    transform: translateX(-50%);
+    min-width: 80vw;
+    font-size: 13px;
+    bottom: 48px;
+  }
+
+  /* Context menu bigger touch targets */
+  .ctx-item { padding: 8px 16px; font-size: 16px; }
+
+  /* Shutdown box */
+  .shutdown-box { width: 90vw; padding: 20px; }
+  .shutdown-title { font-size: 8px; }
+  .shutdown-msg { font-size: 16px; }
+}
+
+/* ── TABLET: 641–900px — hybrid layout ── */
+@media (min-width: 641px) and (max-width: 900px) {
+  .icons-area {
+    position: relative;
+    top: auto; left: auto;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 8px;
+    padding: 10px 14px;
+    width: 100%;
+  }
+
+  .win-window {
+    position: relative !important;
+    left: auto !important;
+    top: auto !important;
+    width: calc(50% - 12px) !important;
+    min-width: unset !important;
+    display: inline-block !important;
+    margin: 6px;
+    vertical-align: top;
+  }
+
+  .win-body { max-height: 380px !important; }
+
+  #desktop {
+    height: auto;
+    min-height: 100dvh;
+    overflow-y: auto;
+    padding-bottom: 44px;
+  }
+
+  #taskbar-apps { display: none; }
+}
+</style>
+</head>
+<body style="background:#000; overflow:hidden;">
+
+<!-- ══════════════════════ BOOT SCREEN ══════════════════════ -->
+<div id="boot-screen">
+  <div class="boot-bios" id="bios-lines"></div>
+
+  <div class="boot-logo">⚡ NOVA<span class="blink">_</span>OS 98</div>
+  <div class="boot-status" id="boot-status">Initializing...<span class="blink">_</span></div>
+
+  <div class="boot-bar-wrap">
+    <div class="boot-bar-fill" id="boot-bar"></div>
+    <span class="boot-percent" id="boot-pct">0%</span>
+  </div>
+
+  <div class="boot-log" id="boot-log"></div>
+</div>
+
+<!-- ══════════════════════ DESKTOP ══════════════════════ -->
+<div id="desktop">
+
+  <!-- Header -->
+  <div class="desktop-header">
+    <div class="desktop-title">
+      <span class="title-bolt">⚡</span>
+      NOVA TECH FEST '98
+      <span class="title-bolt">⚡</span>
+    </div>
+    <div class="desktop-subtitle">Double-click an icon to explore &nbsp;·&nbsp; Sept 12–14, 1998 &nbsp;·&nbsp; Silicon Valley, CA</div>
+  </div>
+
+  <!-- Icons -->
+  <div class="icons-area" id="icons-area">
+    <div class="icon" ondblclick="openWindow('about')" onclick="selectIcon(this)">
+      <div class="icon-img">📁</div>
+      <div class="icon-label">About NovaFest</div>
+    </div>
+    <div class="icon" ondblclick="openWindow('events')" onclick="selectIcon(this)">
+      <div class="icon-img">📅</div>
+      <div class="icon-label">Events &amp; Schedule</div>
+    </div>
+    <div class="icon" ondblclick="openWindow('register')" onclick="selectIcon(this)">
+      <div class="icon-img">📝</div>
+      <div class="icon-label">Register Now</div>
+    </div>
+    <div class="icon" ondblclick="openMyComputer()" onclick="selectIcon(this)">
+      <div class="icon-img">🖥️</div>
+      <div class="icon-label">My Computer</div>
+    </div>
+    <div class="icon" ondblclick="window.open('novaos-about.html','_self')" onclick="selectIcon(this)">
+      <div class="icon-img">❓</div>
+      <div class="icon-label">Help &amp; Support</div>
+    </div>
+    <div class="icon" ondblclick="openOutlook()" onclick="selectIcon(this)">
+      <div class="icon-img">📧</div>
+      <div class="icon-label">Outlook Express</div>
+    </div>
+  </div>
+
+  <!-- ── ABOUT WINDOW ── -->
+  <div class="win-window active" id="window-about">
+    <div class="win-titlebar" onmousedown="startDrag(event,'window-about')">
+      <span class="win-title-icon">📁</span>
+      <span class="win-title-text">About NovaFest — README.TXT</span>
+      <div class="win-controls">
+        <button class="win-btn min-btn" onclick="minimizeWindow('window-about')" title="Minimize">_</button>
+        <button class="win-btn max-btn" onclick="maximizeWindow('window-about')" title="Maximize">□</button>
+        <button class="win-btn close-btn" onclick="closeWindow('window-about')" title="Close">✕</button>
+      </div>
+    </div>
+    <div class="win-menubar">
+      <span class="menu-item">File</span>
+      <span class="menu-item">Edit</span>
+      <span class="menu-item">View</span>
+      <span class="menu-item">Help</span>
+    </div>
+    <div class="win-body">
+
+      <div class="about-hero">
+        <div class="about-hero-title">⚡ WELCOME TO NOVA TECH FEST 1998 ⚡</div>
+        <div class="about-hero-sub">[ BEYOND THE BROWSER ]</div>
+      </div>
+
+      <p style="font-family:'Share Tech Mono',monospace;font-size:12px;margin-bottom:8px;line-height:1.7;color:#111;">
+        Nova Tech Fest is the premier annual gathering for hackers, builders, and visionaries on the bleeding edge of technology. Now in its 3rd year, NovaFest '98 brings together 500+ attendees across 3 days of workshops, talks, and competitions.<br><br>
+        Held at the <strong>Silicon Valley Convention Center</strong>, this is where the future gets written — one line of code at a time.
+      </p>
+
+      <div class="info-section-head">📊 Event Details</div>
+      <table class="info-table">
+        <tr><th>Field</th><th>Value</th></tr>
+        <tr><td><span class="td-icon">📅</span>Dates</td><td>September 12–14, 1998</td></tr>
+        <tr><td><span class="td-icon">📍</span>Venue</td><td>Silicon Valley Conv. Center, CA</td></tr>
+        <tr><td><span class="td-icon">👥</span>Capacity</td><td>500 Attendees</td></tr>
+        <tr><td><span class="td-icon">💰</span>Prize Pool</td><td>$50,000 USD</td></tr>
+        <tr><td><span class="td-icon">🎯</span>Theme</td><td>"Beyond the Browser"</td></tr>
+        <tr><td><span class="td-icon">🌐</span>Internet</td><td>56K Dial-Up + T1 Lab Wing</td></tr>
+      </table>
+
+      <div class="info-section-head">🎤 Keynote Speakers</div>
+      <div class="speaker-card">
+        <div class="speaker-avatar">👩‍💻</div>
+        <div class="speaker-info">
+          <div class="speaker-name">Dr. Ada Novak</div>
+          <div class="speaker-topic">Future of the Web</div>
+        </div>
+        <div class="speaker-day">Day 1</div>
+      </div>
+      <div class="speaker-card">
+        <div class="speaker-avatar">👨‍💻</div>
+        <div class="speaker-info">
+          <div class="speaker-name">Riku Tanaka</div>
+          <div class="speaker-topic">Open Source OS</div>
+        </div>
+        <div class="speaker-day">Day 1</div>
+      </div>
+      <div class="speaker-card">
+        <div class="speaker-avatar">👩‍🔬</div>
+        <div class="speaker-info">
+          <div class="speaker-name">Sam Petrova</div>
+          <div class="speaker-topic">Y2K Survival Guide</div>
+        </div>
+        <div class="speaker-day">Day 2</div>
+      </div>
+      <div class="speaker-card">
+        <div class="speaker-avatar">🧑‍💻</div>
+        <div class="speaker-info">
+          <div class="speaker-name">Lin Wei</div>
+          <div class="speaker-topic">AI in 1998</div>
+        </div>
+        <div class="speaker-day">Day 3</div>
+      </div>
+
+      <div class="info-section-head">🎯 Who Should Attend</div>
+      <ul class="audience-list">
+        <li>Software engineers &amp; programmers</li>
+        <li>Hardware hackers &amp; makers</li>
+        <li>Students &amp; first-time builders</li>
+        <li>Startup founders &amp; investors</li>
+        <li>Open source contributors</li>
+      </ul>
+    </div>
+    <div class="resize-handle" onmousedown="startResize(event,'window-about')">◢</div>
+  </div>
+
+  <!-- ── EVENTS WINDOW ── -->
+  <div class="win-window" id="window-events">
+    <div class="win-titlebar" onmousedown="startDrag(event,'window-events')">
+      <span class="win-title-icon">📅</span>
+      <span class="win-title-text">Events &amp; Schedule — NovaFest98</span>
+      <div class="win-controls">
+        <button class="win-btn min-btn" onclick="minimizeWindow('window-events')" title="Minimize">_</button>
+        <button class="win-btn max-btn" onclick="maximizeWindow('window-events')" title="Maximize">□</button>
+        <button class="win-btn close-btn" onclick="closeWindow('window-events')" title="Close">✕</button>
+      </div>
+    </div>
+    <div class="win-menubar">
+      <span class="menu-item">File</span>
+      <span class="menu-item">View</span>
+      <span class="menu-item">Sort</span>
+      <span class="menu-item">Help</span>
+    </div>
+    <div class="win-body">
+
+      <div class="event-card">
+        <div class="event-card-header">
+          <span class="event-card-title">🔧 Hacking the Hardware Layer</span>
+          <span class="event-badge badge-workshop">Workshop</span>
+        </div>
+        <div class="event-card-body">
+          Hands-on session — build your own USB controller from scratch using commodity chips.
+          <div class="event-meta">
+            <div class="event-meta-item">📅 Day 1, 10:00 AM</div>
+            <div class="event-meta-item">🏛 Hall A</div>
+            <div class="event-meta-item">👥 40 seats</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="event-card">
+        <div class="event-card-header">
+          <span class="event-card-title">🌐 The Open Web Revolution</span>
+          <span class="event-badge badge-keynote">Keynote</span>
+        </div>
+        <div class="event-card-body">
+          Dr. Ada Novak opens the fest with a bold vision for a browser-free internet future.
+          <div class="event-meta">
+            <div class="event-meta-item">📅 Day 1, 2:00 PM</div>
+            <div class="event-meta-item">🏛 Main Stage</div>
+            <div class="event-meta-item">👥 500 seats</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="event-card">
+        <div class="event-card-header">
+          <span class="event-card-title">💻 48-Hour Hack Contest</span>
+          <span class="event-badge badge-contest">Contest</span>
+        </div>
+        <div class="event-card-body">
+          Build something that runs on a 486. Best hack wins $10,000. Judged on creativity + code quality.
+          <div class="event-meta">
+            <div class="event-meta-item">📅 Day 1–2</div>
+            <div class="event-meta-item">🏛 Lab Wing</div>
+            <div class="event-meta-item">🏆 $10,000</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="event-card">
+        <div class="event-card-header">
+          <span class="event-card-title">🤖 Neural Nets — 1998 Edition</span>
+          <span class="event-badge badge-workshop">Workshop</span>
+        </div>
+        <div class="event-card-body">
+          Implementing backprop by hand. No GPUs, no frameworks — pure C and caffeine.
+          <div class="event-meta">
+            <div class="event-meta-item">📅 Day 2, 11:00 AM</div>
+            <div class="event-meta-item">🏛 Room B3</div>
+            <div class="event-meta-item">👥 25 seats</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="event-card">
+        <div class="event-card-header">
+          <span class="event-card-title">🎊 NovaFest After-Party</span>
+          <span class="event-badge badge-social">Social</span>
+        </div>
+        <div class="event-card-body">
+          Retro LAN gaming, floppy disk art show, and a live chiptune performance by DJ 8-Bit Nova.
+          <div class="event-meta">
+            <div class="event-meta-item">📅 Day 2, 8:00 PM</div>
+            <div class="event-meta-item">🏛 Atrium</div>
+            <div class="event-meta-item">🎮 All welcome</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="resize-handle" onmousedown="startResize(event,'window-events')">◢</div>
+  </div>
+
+  <!-- ── REGISTER WINDOW ── -->
+  <div class="win-window" id="window-register">
+    <div class="win-titlebar" onmousedown="startDrag(event,'window-register')">
+      <span class="win-title-icon">📝</span>
+      <span class="win-title-text">Register — NovaFest98.reg</span>
+      <div class="win-controls">
+        <button class="win-btn min-btn" onclick="minimizeWindow('window-register')" title="Minimize">_</button>
+        <button class="win-btn max-btn" onclick="maximizeWindow('window-register')" title="Maximize">□</button>
+        <button class="win-btn close-btn" onclick="closeWindow('window-register')" title="Close">✕</button>
+      </div>
+    </div>
+    <div class="win-menubar">
+      <span class="menu-item">File</span>
+      <span class="menu-item">Edit</span>
+      <span class="menu-item">Format</span>
+      <span class="menu-item">Help</span>
+    </div>
+    <div class="win-body">
+      <div class="notepad-toolbar">
+        <button class="np-btn">New</button>
+        <button class="np-btn">Open</button>
+        <button class="np-btn">Save</button>
+        <button class="np-btn" onclick="openWindow('register')">Reset</button>
+      </div>
+      <div class="notepad-area">
+        <div class="np-title">NOVAFEST '98 — ATTENDEE REGISTRATION FORM v2.1</div>
+
+        <div class="form-row">
+          <label class="form-label">👤 Full Name</label>
+          <input type="text" class="form-input" id="reg-name" placeholder="Enter your full name">
+        </div>
+
+        <div class="form-row">
+          <label class="form-label">📧 E-Mail Address</label>
+          <input type="email" class="form-input" id="reg-email" placeholder="user@novabbs.net">
+        </div>
+
+        <div class="form-row">
+          <label class="form-label">🏢 Organization</label>
+          <input type="text" class="form-input" id="reg-org" placeholder="Company / University / Independent">
+        </div>
+
+        <div class="form-row">
+          <label class="form-label">🎟 Pass Type</label>
+          <select class="form-select" id="reg-pass">
+            <option value="">— Select a pass —</option>
+            <option value="full">Full Access — $199</option>
+            <option value="day1">Day 1 Only — $79</option>
+            <option value="student">Student Pass — $49</option>
+            <option value="vip">VIP + Hackathon — $349</option>
+          </select>
+        </div>
+
+        <div class="form-row">
+          <label class="form-label">💬 Bio / Why are you attending?</label>
+          <textarea class="form-textarea" id="reg-bio" placeholder="Tell us about yourself..."></textarea>
+        </div>
+
+        <label class="checkbox-row">
+          <input type="checkbox" id="reg-tos">
+          <span>I accept the NovaFest '98 Terms of Service and Code of Conduct</span>
+        </label>
+
+        <label class="checkbox-row">
+          <input type="checkbox" id="reg-news">
+          <span>Subscribe to NovaBBS newsletter (recommended)</span>
+        </label>
+
+        <button class="btn-submit" onclick="submitReg()">▶ SUBMIT REGISTRATION ◀</button>
+      </div>
+    </div>
+    <div class="resize-handle" onmousedown="startResize(event,'window-register')">◢</div>
+  </div>
+
+  <!-- ── TASKBAR ── -->
+  <div id="taskbar">
+    <button id="start-btn" onclick="toggleStartMenu(event)">
+      <span class="start-logo">⊞</span> Start
+    </button>
+    <div class="taskbar-divider"></div>
+    <div id="taskbar-apps"></div>
+    <div class="taskbar-right">
+      <span class="tray-icon" title="Network">📡</span>
+      <span class="tray-icon" title="Volume">🔊</span>
+      <span class="tray-icon" title="Power">🔋</span>
+      <div id="taskbar-clock"></div>
+    </div>
+  </div>
+
+  <!-- ── START MENU ── -->
+  <div id="start-menu">
+    <div class="start-sidebar">
+      <span class="start-sidebar-text">NovaOS 98</span>
+    </div>
+    <div class="start-items">
+      <div class="start-item" onclick="openWindow('about'); closeStartMenu()"><span class="start-item-icon">📁</span> About NovaFest</div>
+      <div class="start-item" onclick="openWindow('events'); closeStartMenu()"><span class="start-item-icon">📅</span> Events</div>
+      <div class="start-item" onclick="openWindow('register'); closeStartMenu()"><span class="start-item-icon">📝</span> Register</div>
+      <div class="start-separator"></div>
+      <div class="start-item" onclick="window.open('novaos-about.html','_self'); closeStartMenu()"><span class="start-item-icon">❓</span> Help &amp; Support</div>
+      <div class="start-item" onclick="openOutlook(); closeStartMenu()"><span class="start-item-icon">📧</span> Outlook Express</div>
+      <div class="start-separator"></div>
+      <div class="start-item" onclick="startScreensaver(); closeStartMenu()"><span class="start-item-icon">🌟</span> Screensaver</div>
+      <div class="start-separator"></div>
+      <div class="start-item" onclick="shutDown(); closeStartMenu()"><span class="start-item-icon">🔴</span> Shut Down...</div>
+    </div>
+  </div>
+
+  <!-- Screensaver -->
+  <div id="screensaver" onclick="stopScreensaver()">
+    <canvas id="ss-canvas"></canvas>
+  </div>
+
+  <!-- Shutdown -->
+  <div id="shutdown-screen">
+    <div class="shutdown-box">
+      <div class="shutdown-icon">💻</div>
+      <div class="shutdown-title">NOVAOS 98</div>
+      <div class="shutdown-msg">
+        It is now safe to<br>turn off your computer.<br><br>
+        <span style="font-size:13px;color:#666;">Thank you for attending NovaFest '98!</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Success dialog -->
+  <div id="success-dialog">
+    <div class="win-titlebar" style="cursor:default;">
+      <span class="win-title-icon">✅</span>
+      <span class="win-title-text">Registration Complete</span>
+      <div class="win-controls">
+        <button class="win-btn close-btn" onclick="document.getElementById('success-dialog').style.display='none'">✕</button>
+      </div>
+    </div>
+    <div class="dialog-body">
+      <div class="dialog-icon">🎉</div>
+      <div class="dialog-msg">
+        Registration successful!<br>
+        Welcome to NovaFest '98.<br>
+        <span style="font-size:13px;color:#444;">Check your inbox at novabbs.net</span>
+      </div>
+      <button class="dialog-ok" onclick="document.getElementById('success-dialog').style.display='none'">OK</button>
+    </div>
+  </div>
+
+  <!-- Error dialog -->
+  <div id="error-dialog">
+    <div class="win-titlebar" style="cursor:default;">
+      <span class="win-title-icon">⚠️</span>
+      <span class="win-title-text" id="error-title">NovaOS Error</span>
+      <div class="win-controls">
+        <button class="win-btn close-btn" onclick="closeError()">✕</button>
+      </div>
+    </div>
+    <div class="error-body">
+      <div class="error-icon">🛑</div>
+      <div class="error-msg" id="error-msg">An unexpected error has occurred.</div>
+    </div>
+    <div class="error-buttons">
+      <button class="error-btn" onclick="closeError()">OK</button>
+      <button class="error-btn" onclick="closeError()">Cancel</button>
+      <button class="error-btn" onclick="closeError()">Ignore</button>
+    </div>
+  </div>
+
+  <!-- Right-click context menu -->
+  <div id="context-menu">
+    <div class="ctx-item" onclick="refreshDesktop(); hideContext()">🔄 &nbsp;Refresh</div>
+    <div class="ctx-sep"></div>
+    <div class="ctx-item" onclick="openWindow('about'); hideContext()">📁 &nbsp;About</div>
+    <div class="ctx-item" onclick="openWindow('events'); hideContext()">📅 &nbsp;Events</div>
+    <div class="ctx-item" onclick="openWindow('register'); hideContext()">📝 &nbsp;Register</div>
+    <div class="ctx-sep"></div>
+    <div class="ctx-item" onclick="showProperties(); hideContext()">⚙️ &nbsp;Properties</div>
+  </div>
+</div>
+
+<script>
+// ── AUDIO ──
+const AudioCtx = window.AudioContext || window.webkitAudioContext;
+let audioCtx;
+
+function getAudio() {
+  if (!audioCtx) audioCtx = new AudioCtx();
+  return audioCtx;
+}
+
+function playBeep(freq=440, dur=0.08, type='square', vol=0.06) {
+  try {
+    const ctx = getAudio();
+    const o = ctx.createOscillator();
+    const g = ctx.createGain();
+    o.connect(g); g.connect(ctx.destination);
+    o.type = type; o.frequency.value = freq;
+    g.gain.setValueAtTime(vol, ctx.currentTime);
+    g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + dur);
+    o.start(); o.stop(ctx.currentTime + dur);
+  } catch(e) {}
+}
+
+function playStartupChime() {
+  try {
+    const ctx = getAudio();
+    const notes = [523, 659, 784, 1047];
+    notes.forEach((f, i) => {
+      const o = ctx.createOscillator();
+      const g = ctx.createGain();
+      o.connect(g); g.connect(ctx.destination);
+      o.type = 'sine'; o.frequency.value = f;
+      const t = ctx.currentTime + i * 0.18;
+      g.gain.setValueAtTime(0, t);
+      g.gain.linearRampToValueAtTime(0.12, t + 0.04);
+      g.gain.exponentialRampToValueAtTime(0.001, t + 0.35);
+      o.start(t); o.stop(t + 0.4);
+    });
+  } catch(e) {}
+}
+
+function playClick() { playBeep(800, 0.04, 'square', 0.04); }
+function playError() { playBeep(180, 0.3, 'sawtooth', 0.08); }
+function playOpen()  { playBeep(660, 0.06, 'square', 0.05); setTimeout(()=>playBeep(880,0.06,'square',0.04),70); }
+function playClose() { playBeep(440, 0.06, 'square', 0.04); }
+
+// ── BOOT ──
+const bootMessages = [
+  'Initializing NovaOS 98 kernel...',
+  'Loading device drivers...',
+  'Starting network stack (Winsock 2.0)...',
+  'Mounting filesystem (FAT32)...',
+  'Loading desktop environment...',
+  'Applying user settings...',
+  'Starting NovaFest services...',
+  'Connecting to novabbs.net...',
+  'Almost ready...',
+  'Welcome to NovaFest \'98!'
+];
+
+const biosLines = [
+  'NOVA BIOS v2.4 — Copyright (C) 1998 NovaCore Systems Inc.',
+  'CPU: Pentium II 333MHz [OK]',
+  'Memory Test: 65536K ... [OK]',
+  'IDE Primary Master: NOVA-HDD 4GB [OK]',
+  'Floppy Disk: A: 1.44MB [OK]',
+  'PCI Device: NovaNIC 10Mbps Ethernet [OK]',
+];
+
+window.addEventListener('load', () => {
+  const biosEl = document.getElementById('bios-lines');
+  biosLines.forEach(l => {
+    const s = document.createElement('span');
+    s.textContent = l;
+    biosEl.appendChild(s);
+  });
+
+  let pct = 0;
+  let msgIdx = 0;
+  const bar = document.getElementById('boot-bar');
+  const pctEl = document.getElementById('boot-pct');
+  const statusEl = document.getElementById('boot-status');
+  const logEl = document.getElementById('boot-log');
+
+  const interval = setInterval(() => {
+    const inc = Math.random() * 7 + 3;
+    pct = Math.min(100, pct + inc);
+    bar.style.width = pct + '%';
+    pctEl.textContent = Math.floor(pct) + '%';
+
+    const msgStep = Math.floor((pct / 100) * bootMessages.length);
+    if (msgStep !== msgIdx && msgStep < bootMessages.length) {
+      msgIdx = msgStep;
+      statusEl.innerHTML = bootMessages[msgIdx] + '<span class="blink">_</span>';
+      const line = document.createElement('div');
+      line.textContent = '[ ' + new Date().toLocaleTimeString() + ' ] ' + bootMessages[msgIdx];
+      logEl.appendChild(line);
+      logEl.scrollTop = logEl.scrollHeight;
+    }
+
+    if (pct >= 100) {
+      clearInterval(interval);
+      setTimeout(launchDesktop, 600);
+    }
+  }, 120);
+});
+
+function launchDesktop() {
+  playStartupChime();
+  const boot = document.getElementById('boot-screen');
+  boot.style.transition = 'opacity 0.8s';
+  boot.style.opacity = '0';
+  setTimeout(() => {
+    boot.style.display = 'none';
+    const desk = document.getElementById('desktop');
+    desk.style.display = 'block';
+    desk.style.opacity = '0';
+    desk.style.transition = 'opacity 0.6s';
+    setTimeout(() => { desk.style.opacity = '1'; }, 50);
+
+    openWindow('about');
+    updateClock();
+    setInterval(updateClock, 1000);
+    startToastCycle();
+    idleTimer();
+    setupMobileTaps();
+  }, 800);
+}
+
+// ── CLOCK ──
+function updateClock() {
+  const now = new Date();
+  const h = now.getHours().toString().padStart(2,'0');
+  const m = now.getMinutes().toString().padStart(2,'0');
+  document.getElementById('taskbar-clock').textContent = h + ':' + m;
+}
+
+// ── WINDOW MANAGEMENT ──
+let zCounter = 500;
+const winMeta = {};
+
+const isMobile = () => window.innerWidth <= 640;
+
+function openWindow(id) {
+  playOpen();
+  const el = document.getElementById('window-' + id);
+  if (!el) return;
+  // On mobile, windows are always visible as cards — just scroll to it
+  if (isMobile()) {
+    el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    return;
+  }
+  el.style.display = 'block';
+  el.classList.add('opening');
+  setTimeout(() => el.classList.remove('opening'), 200);
+  focusWindow('window-' + id);
+  updateTaskbar();
+  // Smart positioning on desktop
+  if (!winMeta[id]) {
+    const offset = Object.keys(winMeta).length * 28;
+    el.style.top = (80 + offset) + 'px';
+    el.style.left = (90 + offset) + 'px';
+    winMeta[id] = true;
+  }
+}
+
+function closeWindow(id) {
+  if (isMobile()) return; // windows always shown on mobile
+  playClose();
+  const el = document.getElementById(id);
+  if (!el) return;
+  el.style.transition = 'transform 0.12s, opacity 0.12s';
+  el.style.transform = 'scale(0.9)';
+  el.style.opacity = '0';
+  setTimeout(() => {
+    el.style.display = 'none';
+    el.style.transform = '';
+    el.style.opacity = '';
+    el.style.transition = '';
+    updateTaskbar();
+  }, 130);
+}
+
+function minimizeWindow(id) {
+  if (isMobile()) return;
+  playClick();
+  const el = document.getElementById(id);
+  if (!el) return;
+  el.style.transition = 'transform 0.15s, opacity 0.15s';
+  el.style.transform = 'scaleY(0.05) translateY(200px)';
+  el.style.opacity = '0';
+  setTimeout(() => {
+    el.style.display = 'none';
+    el.style.transform = '';
+    el.style.opacity = '';
+    el.style.transition = '';
+    el.dataset.minimized = '1';
+    updateTaskbar();
+  }, 150);
+}
+
+function maximizeWindow(id) {
+  playClick();
+  const el = document.getElementById(id);
+  if (!el) return;
+  if (el.dataset.maximized === '1') {
+    el.style.top = el.dataset.prevTop || '80px';
+    el.style.left = el.dataset.prevLeft || '90px';
+    el.style.width = el.dataset.prevW || '';
+    el.style.height = el.dataset.prevH || '';
+    el.dataset.maximized = '';
+  } else {
+    el.dataset.prevTop = el.style.top;
+    el.dataset.prevLeft = el.style.left;
+    el.dataset.prevW = el.style.width;
+    el.dataset.prevH = el.style.height;
+    el.style.top = '0'; el.style.left = '0';
+    el.style.width = '100vw';
+    el.style.height = 'calc(100vh - 36px)';
+    el.dataset.maximized = '1';
+  }
+}
+
+function focusWindow(id) {
+  document.querySelectorAll('.win-window').forEach(w => {
+    w.classList.remove('active');
+  });
+  const el = document.getElementById(id);
+  if (el) {
+    el.classList.add('active');
+    el.style.zIndex = ++zCounter;
+  }
+  updateTaskbar();
+}
+
+function updateTaskbar() {
+  const area = document.getElementById('taskbar-apps');
+  area.innerHTML = '';
+  const wins = ['window-about','window-events','window-register'];
+  const labels = { 'window-about':'📁 About','window-events':'📅 Events','window-register':'📝 Register' };
+  wins.forEach(id => {
+    const el = document.getElementById(id);
+    if (el && el.style.display !== 'none') {
+      const btn = document.createElement('button');
+      btn.className = 'taskbar-app-btn' + (el.classList.contains('active') ? ' active' : '');
+      btn.textContent = labels[id];
+      btn.onclick = () => {
+        if (el.dataset.minimized === '1') {
+          el.style.display = 'block';
+          el.dataset.minimized = '';
+        }
+        focusWindow(id);
+        playClick();
+      };
+      area.appendChild(btn);
+    }
+  });
+}
+
+// ── DRAG ──
+let dragEl = null, dragOffX = 0, dragOffY = 0;
+
+function startDrag(e, id) {
+  if (e.target.closest('.win-controls')) return;
+  if (isMobile()) return; // no drag on mobile
+  dragEl = document.getElementById(id);
+  focusWindow(id);
+  const rect = dragEl.getBoundingClientRect();
+  dragOffX = (e.touches ? e.touches[0].clientX : e.clientX) - rect.left;
+  dragOffY = (e.touches ? e.touches[0].clientY : e.clientY) - rect.top;
+  document.addEventListener('mousemove', onDrag);
+  document.addEventListener('touchmove', onDrag, {passive:false});
+  document.addEventListener('mouseup', stopDrag);
+  document.addEventListener('touchend', stopDrag);
+}
+
+function onDrag(e) {
+  if (!dragEl) return;
+  e.preventDefault();
+  const cx = e.touches ? e.touches[0].clientX : e.clientX;
+  const cy = e.touches ? e.touches[0].clientY : e.clientY;
+  let nx = cx - dragOffX;
+  let ny = cy - dragOffY;
+  nx = Math.max(0, Math.min(nx, window.innerWidth - dragEl.offsetWidth));
+  ny = Math.max(0, Math.min(ny, window.innerHeight - 36 - dragEl.offsetHeight));
+  dragEl.style.left = nx + 'px';
+  dragEl.style.top  = ny + 'px';
+}
+
+function stopDrag() {
+  dragEl = null;
+  document.removeEventListener('mousemove', onDrag);
+  document.removeEventListener('touchmove', onDrag);
+  document.removeEventListener('mouseup', stopDrag);
+  document.removeEventListener('touchend', stopDrag);
+}
+
+// ── RESIZE ──
+let resizeEl = null, resizeStartX, resizeStartY, resizeStartW, resizeStartH;
+
+function startResize(e, id) {
+  e.stopPropagation();
+  resizeEl = document.getElementById(id);
+  resizeStartX = e.clientX;
+  resizeStartY = e.clientY;
+  resizeStartW = resizeEl.offsetWidth;
+  resizeStartH = resizeEl.offsetHeight;
+  document.addEventListener('mousemove', onResize);
+  document.addEventListener('mouseup', stopResize);
+}
+
+function onResize(e) {
+  if (!resizeEl) return;
+  const dw = e.clientX - resizeStartX;
+  const dh = e.clientY - resizeStartY;
+  resizeEl.style.width = Math.max(280, resizeStartW + dw) + 'px';
+  resizeEl.style.height = Math.max(200, resizeStartH + dh) + 'px';
+  const body = resizeEl.querySelector('.win-body');
+  if (body) body.style.maxHeight = (Math.max(200, resizeStartH + dh) - 70) + 'px';
+}
+
+function stopResize() {
+  resizeEl = null;
+  document.removeEventListener('mousemove', onResize);
+  document.removeEventListener('mouseup', stopResize);
+}
+
+// ── ICON SELECTION ──
+function selectIcon(el) {
+  playClick();
+  document.querySelectorAll('.icon').forEach(i => i.classList.remove('selected'));
+  el.classList.add('selected');
+}
+
+// ── FORM SUBMISSION ──
+function submitReg() {
+  playClick();
+  const name = document.getElementById('reg-name').value.trim();
+  const email = document.getElementById('reg-email').value.trim();
+  const pass = document.getElementById('reg-pass').value;
+  const tos = document.getElementById('reg-tos').checked;
+
+  if (!name) { showError('Form Error', '⚠ Please enter your full name.'); playError(); return; }
+  if (!email || !email.includes('@')) { showError('Form Error', '⚠ Invalid e-mail address.\nPlease check and try again.'); playError(); return; }
+  if (!pass) { showError('Form Error', '⚠ Please select a pass type.'); playError(); return; }
+  if (!tos) { showError('Terms Error', '⚠ You must accept the Terms of Service\nbefore registering.'); playError(); return; }
+
+  document.getElementById('success-dialog').style.display = 'block';
+  playBeep(1047, 0.15, 'sine', 0.1);
+  setTimeout(() => playBeep(1319, 0.15, 'sine', 0.1), 160);
+  setTimeout(() => playBeep(1568, 0.2, 'sine', 0.1), 320);
+}
+
+function showError(title, msg) {
+  document.getElementById('error-title').textContent = title;
+  document.getElementById('error-msg').textContent = msg;
+  document.getElementById('error-dialog').style.display = 'block';
+}
+
+function closeError() {
+  playClick();
+  document.getElementById('error-dialog').style.display = 'none';
+}
+
+// ── START MENU ──
+let startOpen = false;
+
+function toggleStartMenu(e) {
+  e.stopPropagation();
+  playClick();
+  startOpen = !startOpen;
+  const m = document.getElementById('start-menu');
+  m.style.display = startOpen ? 'flex' : 'none';
+  document.getElementById('start-btn').classList.toggle('active', startOpen);
+}
+
+function closeStartMenu() {
+  startOpen = false;
+  document.getElementById('start-menu').style.display = 'none';
+  document.getElementById('start-btn').classList.remove('active');
+}
+
+document.addEventListener('click', (e) => {
+  if (!e.target.closest('#start-menu') && !e.target.closest('#start-btn')) closeStartMenu();
+  if (!e.target.closest('#context-menu')) hideContext();
+  if (!e.target.closest('.icon')) {
+    document.querySelectorAll('.icon').forEach(i => i.classList.remove('selected'));
+  }
+});
+
+// ── RIGHT-CLICK ──
+document.getElementById('desktop')?.addEventListener('contextmenu', e => {
+  e.preventDefault();
+  const menu = document.getElementById('context-menu');
+  menu.style.display = 'block';
+  let x = e.clientX, y = e.clientY;
+  if (x + 160 > window.innerWidth) x -= 160;
+  if (y + 200 > window.innerHeight) y -= 200;
+  menu.style.left = x + 'px';
+  menu.style.top = y + 'px';
+});
+
+function hideContext() {
+  document.getElementById('context-menu').style.display = 'none';
+}
+
+function refreshDesktop() {
+  playOpen();
+  showToast('🔄', 'Desktop refreshed.');
+}
+
+function showProperties() {
+  showError('Desktop Properties', 'NovaOS 98 Desktop\nResolution: 1024×768\nColor Depth: 16-bit\nWallpaper: Teal Grid v2');
+  playClick();
+}
+
+// ── EASTER EGGS ──
+function openMyComputer() {
+  showError('My Computer', '💾 Drive C:  NOVA-HDD  4096 MB\n💿 Drive D:  CD-ROM  650 MB\n🖨️ LPT1:  NovaJet 300 Printer\n🖧 Net:  novabbs.net  (Connected)');
+  playOpen();
+}
+
+function openOutlook() {
+  showError('Outlook Express', '📬 You have 3 new messages!\n\n• novabbs: "Your reg is confirmed"\n• Dr. Ada Novak: "See you at keynote!"\n• Y2K-Bot: "555 days remaining..."');
+  playOpen();
+}
+
+// ── TOAST NOTIFICATIONS ──
+const toasts = [
+  ['📡', 'Connected to novabbs.net (56K)'],
+  ['🔔', 'Reminder: Hack Contest starts 10 AM'],
+  ['💾', 'AutoSave complete — 3:14 KB'],
+  ['⚠️', 'Low disk space on Drive C:'],
+  ['📧', 'New message from Dr. Novak'],
+  ['🔋', 'Battery: 78% — plugged in'],
+];
+
+let toastIdx = 0;
+
+function showToast(icon, msg) {
+  const old = document.querySelector('.toast');
+  if (old) old.remove();
+  const t = document.createElement('div');
+  t.className = 'toast';
+  t.innerHTML = `<span class="toast-icon">${icon}</span><span>${msg}</span>`;
+  document.getElementById('desktop').appendChild(t);
+  playBeep(800, 0.08, 'sine', 0.04);
+  setTimeout(() => { t.style.opacity = '0'; setTimeout(() => t.remove(), 400); }, 4000);
+}
+
+function startToastCycle() {
+  const [icon, msg] = toasts[toastIdx % toasts.length];
+  showToast(icon, msg);
+  toastIdx++;
+  setTimeout(startToastCycle, 12000 + Math.random() * 6000);
+}
+
+// ── SCREENSAVER (STARFIELD) ──
+let ssRunning = false, ssAnim;
+const stars = [];
+
+function startScreensaver() {
+  ssRunning = true;
+  const ss = document.getElementById('screensaver');
+  ss.style.display = 'block';
+  const canvas = document.getElementById('ss-canvas');
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+  const ctx = canvas.getContext('2d');
+
+  for (let i = 0; i < 200; i++) {
+    stars.push({
+      x: Math.random() * canvas.width,
+      y: Math.random() * canvas.height,
+      z: Math.random() * canvas.width,
+      pz: 0
+    });
+  }
+
+  function frame() {
+    if (!ssRunning) return;
+    ctx.fillStyle = 'rgba(0,0,0,0.15)';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    const cx = canvas.width / 2, cy = canvas.height / 2;
+    stars.forEach(s => {
+      s.pz = s.z;
+      s.z -= 4;
+      if (s.z <= 0) { s.x = Math.random()*canvas.width; s.y = Math.random()*canvas.height; s.z = canvas.width; s.pz = s.z; }
+      const sx = (s.x - cx) * (canvas.width / s.z) + cx;
+      const sy = (s.y - cy) * (canvas.width / s.z) + cy;
+      const px = (s.x - cx) * (canvas.width / s.pz) + cx;
+      const py = (s.y - cy) * (canvas.width / s.pz) + cy;
+      const size = (1 - s.z / canvas.width) * 3;
+      const bright = Math.floor((1 - s.z / canvas.width) * 255);
+      ctx.strokeStyle = `rgb(${bright},${bright},255)`;
+      ctx.lineWidth = size;
+      ctx.beginPath(); ctx.moveTo(px, py); ctx.lineTo(sx, sy); ctx.stroke();
+    });
+    ssAnim = requestAnimationFrame(frame);
+  }
+  frame();
+}
+
+function stopScreensaver() {
+  ssRunning = false;
+  cancelAnimationFrame(ssAnim);
+  document.getElementById('screensaver').style.display = 'none';
+  stars.length = 0;
+}
+
+// ── IDLE SCREENSAVER ──
+let idleTimeout;
+
+function idleTimer() {
+  resetIdle();
+  ['mousemove','keydown','click','touchstart'].forEach(ev => document.addEventListener(ev, resetIdle));
+}
+
+function resetIdle() {
+  clearTimeout(idleTimeout);
+  if (ssRunning) stopScreensaver();
+  idleTimeout = setTimeout(() => {
+    if (!ssRunning) startScreensaver();
+  }, 45000);
+}
+
+// ── SHUT DOWN ──
+function shutDown() {
+  playClose();
+  setTimeout(() => playClose(), 200);
+  const desk = document.getElementById('desktop');
+  desk.style.transition = 'opacity 0.8s';
+  desk.style.opacity = '0';
+  setTimeout(() => {
+    desk.style.display = 'none';
+    const sd = document.getElementById('shutdown-screen');
+    sd.style.display = 'flex';
+    sd.style.opacity = '0';
+    sd.style.transition = 'opacity 0.6s';
+    setTimeout(() => sd.style.opacity = '1', 50);
+  }, 800);
+}
+
+// ── PIXEL DUST (click effect) ──
+document.addEventListener('click', spawnDust);
+
+function spawnDust(e) {
+  for (let i = 0; i < 6; i++) {
+    const d = document.createElement('div');
+    d.className = 'pixel-dust';
+    d.style.cssText = `left:${e.clientX}px;top:${e.clientY}px;position:fixed;z-index:9999;pointer-events:none;
+      background:${['#00ff41','#0ff','#fff','#ff0'][Math.floor(Math.random()*4)]};
+      width:${Math.random()*5+2}px;height:${Math.random()*5+2}px;`;
+    document.body.appendChild(d);
+    const vx = (Math.random()-0.5)*80;
+    const vy = (Math.random()-1)*80;
+    let t = 0;
+    const anim = setInterval(() => {
+      t += 0.05;
+      const x = parseFloat(d.style.left) + vx*0.05;
+      const y = parseFloat(d.style.top) + vy*0.05 + 2*t;
+      d.style.left = x + 'px';
+      d.style.top  = y + 'px';
+      d.style.opacity = 1 - t;
+      if (t >= 1) { clearInterval(anim); d.remove(); }
+    }, 16);
+  }
+} 
+
+// ── MOBILE: single-tap icons ──
+function setupMobileTaps() {
+  if (!isMobile()) return;
+  document.querySelectorAll('.icon').forEach(icon => {
+    icon.addEventListener('click', () => {
+      const dblclick = icon.getAttribute('ondblclick');
+      if (dblclick) {
+        try { eval(dblclick); } catch(e) {}
+      }
+    });
+  });
+}
+
+// ── CLICK SOUNDS ON BUTTONS ──
+document.addEventListener('mousedown', e => {
+  if (e.target.matches('button, .menu-item, .start-item, .ctx-item')) playClick();
+});
+
+// ── WINDOW FOCUS ON CLICK ──
+document.querySelectorAll('.win-window').forEach(w => {
+  w.addEventListener('mousedown', () => focusWindow(w.id));
+});
+</script>
+</body>
 </html>
