@@ -1,0 +1,785 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>NovaFest Help — NovaOS 98</title>
+  <link href="https://fonts.googleapis.com/css2?family=VT323&family=Share+Tech+Mono&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --win-bg: #c0c0c0;
+      --win-dark: #808080;
+      --win-darker: #404040;
+      --win-light: #ffffff;
+      --win-face: #c0c0c0;
+      --title-bg: #000080;
+      --title-text: #ffffff;
+      --desktop: #008080;
+      --green: #00ff41;
+      --text: #000000;
+      --font-pixel: 'VT323', monospace;
+      --font-mono: 'Share Tech Mono', monospace;
+    }
+
+    html, body { height: 100%; }
+
+    body {
+      background-color: var(--desktop);
+      background-image:
+        linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px);
+      background-size: 32px 32px;
+      font-family: var(--font-mono);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      padding: 14px 14px 52px;
+      min-height: 100vh;
+    }
+
+    .scanlines {
+      position: fixed; inset: 0;
+      pointer-events: none;
+      z-index: 9999;
+      background: repeating-linear-gradient(
+        0deg, transparent, transparent 3px,
+        rgba(0,0,0,0.06) 3px, rgba(0,0,0,0.06) 4px
+      );
+    }
+    .crt-vignette {
+      position: fixed; inset: 0;
+      pointer-events: none;
+      z-index: 9998;
+      background: radial-gradient(ellipse at center, transparent 60%, rgba(0,0,0,0.3) 100%);
+    }
+
+    /* ── HELP WINDOW ── */
+    .help-window {
+      width: min(880px, 100%);
+      background: var(--win-bg);
+      border-top: 2px solid var(--win-light);
+      border-left: 2px solid var(--win-light);
+      border-right: 2px solid var(--win-darker);
+      border-bottom: 2px solid var(--win-darker);
+      box-shadow: 4px 4px 18px rgba(0,0,0,0.45);
+      display: flex;
+      flex-direction: column;
+      margin-top: 6px;
+      animation: winOpen 0.18s ease;
+    }
+    @keyframes winOpen {
+      from { transform: scale(0.96) translateY(-6px); opacity: 0.5; }
+      to   { transform: scale(1) translateY(0); opacity: 1; }
+    }
+
+    /* Title bar */
+    .win-title {
+      background: linear-gradient(to right, var(--title-bg) 0%, #1084d0 100%);
+      color: var(--title-text);
+      padding: 5px 7px;
+      display: flex; align-items: center; justify-content: space-between;
+      user-select: none;
+    }
+    .win-title-text {
+      font-family: var(--font-mono);
+      font-size: 0.78rem;
+      display: flex; align-items: center; gap: 6px;
+      text-shadow: 1px 1px 0 rgba(0,0,0,0.4);
+    }
+    .win-controls { display: flex; gap: 2px; }
+    .win-btn {
+      width: 16px; height: 14px;
+      background: var(--win-face);
+      border-top: 1px solid var(--win-light);
+      border-left: 1px solid var(--win-light);
+      border-right: 1px solid var(--win-darker);
+      border-bottom: 1px solid var(--win-darker);
+      font-size: 0.6rem;
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer; color: #000;
+    }
+    .win-btn:hover { background: #d8d8d8; }
+    .win-btn:active {
+      border-top: 1px solid var(--win-darker); border-left: 1px solid var(--win-darker);
+      border-right: 1px solid var(--win-light); border-bottom: 1px solid var(--win-light);
+    }
+    .win-btn.close-btn:hover { background: #ff6666; color: #fff; }
+
+    /* Toolbar */
+    .toolbar {
+      background: var(--win-bg);
+      border-bottom: 2px solid var(--win-darker);
+      padding: 4px 6px;
+      display: flex; align-items: center; gap: 3px;
+      flex-wrap: wrap;
+    }
+    .tb-btn {
+      display: flex; align-items: center; gap: 5px;
+      padding: 4px 10px;
+      background: var(--win-face);
+      border-top: 2px solid var(--win-light);
+      border-left: 2px solid var(--win-light);
+      border-right: 2px solid var(--win-darker);
+      border-bottom: 2px solid var(--win-darker);
+      font-family: var(--font-mono);
+      font-size: 0.71rem;
+      cursor: pointer;
+      text-decoration: none;
+      color: #000;
+      white-space: nowrap;
+    }
+    .tb-btn:hover { background: #d0d0d0; }
+    .tb-btn:active {
+      border-top: 2px solid var(--win-darker); border-left: 2px solid var(--win-darker);
+      border-right: 2px solid var(--win-light); border-bottom: 2px solid var(--win-light);
+    }
+    .tb-btn.primary {
+      background: var(--title-bg); color: #fff;
+      border-color: #5060b0 #000020 #000020 #5060b0;
+    }
+    .tb-btn.primary:hover { background: #1010a0; }
+    .tb-sep { width: 1px; height: 24px; background: var(--win-dark); margin: 0 3px; }
+
+    /* Menu bar */
+    .win-menu {
+      background: var(--win-bg);
+      padding: 1px 4px;
+      display: flex;
+      border-bottom: 1px solid var(--win-dark);
+    }
+    .menu-item { font-family: var(--font-mono); font-size: 0.71rem; padding: 2px 8px; cursor: pointer; }
+    .menu-item:hover { background: var(--title-bg); color: #fff; }
+    .menu-item span { text-decoration: underline; }
+
+    /* Body layout */
+    .help-body {
+      display: flex;
+      min-height: 520px;
+      max-height: calc(100vh - 200px);
+    }
+
+    /* Sidebar TOC */
+    .toc {
+      width: 218px;
+      flex-shrink: 0;
+      border-right: 2px solid var(--win-darker);
+      background: #d4d0c8;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+    .toc-header {
+      background: var(--title-bg);
+      color: #fff;
+      font-family: var(--font-pixel);
+      font-size: 0.85rem;
+      padding: 5px 10px;
+      letter-spacing: 1px;
+      flex-shrink: 0;
+    }
+    .toc-search {
+      padding: 5px;
+      border-bottom: 1px solid var(--win-dark);
+      flex-shrink: 0;
+    }
+    .toc-input {
+      width: 100%;
+      background: #fff;
+      border-top: 1px solid var(--win-darker);
+      border-left: 1px solid var(--win-darker);
+      border-right: 1px solid var(--win-light);
+      border-bottom: 1px solid var(--win-light);
+      padding: 3px 6px;
+      font-family: var(--font-mono);
+      font-size: 0.68rem;
+      outline: none;
+    }
+    .toc-items { flex: 1; overflow-y: auto; }
+    .toc-item {
+      display: flex; align-items: center; gap: 6px;
+      padding: 5px 10px;
+      font-family: var(--font-mono);
+      font-size: 0.71rem;
+      cursor: pointer;
+      border-bottom: 1px solid rgba(0,0,0,0.06);
+      user-select: none;
+    }
+    .toc-item:hover { background: var(--title-bg); color: #fff; }
+    .toc-item.active { background: var(--title-bg); color: #fff; }
+    .toc-sub {
+      padding-left: 26px;
+      font-size: 0.66rem;
+      color: #444;
+    }
+    .toc-sub:hover { background: #6060b8; color: #fff; }
+    .toc-sub.active { background: #5050a0; color: #fff; }
+
+    /* Main content */
+    .help-content {
+      flex: 1;
+      overflow-y: auto;
+      padding: 22px 26px;
+      background: #fff;
+    }
+
+    .help-content h1 {
+      font-family: var(--font-pixel);
+      font-size: 1.7rem;
+      color: var(--title-bg);
+      border-bottom: 2px solid var(--title-bg);
+      padding-bottom: 5px;
+      margin-bottom: 16px;
+      letter-spacing: 1px;
+    }
+    .help-content h2 {
+      font-family: var(--font-pixel);
+      font-size: 1.15rem;
+      color: var(--title-bg);
+      margin: 26px 0 10px;
+      border-bottom: 1px solid #aaa;
+      padding-bottom: 3px;
+    }
+    .help-content h3 {
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      font-weight: bold;
+      color: #000;
+      margin: 16px 0 6px;
+    }
+    .help-content p {
+      font-family: var(--font-mono);
+      font-size: 0.76rem;
+      line-height: 1.78;
+      color: #111;
+      margin-bottom: 10px;
+    }
+    .help-content ul, .help-content ol {
+      margin: 6px 0 10px 20px;
+      font-family: var(--font-mono);
+      font-size: 0.74rem;
+      line-height: 1.72;
+      color: #111;
+    }
+    .help-content a { color: var(--title-bg); }
+
+    /* Info boxes */
+    .tip-box {
+      background: #ffffcc;
+      border: 1px solid #c8c800;
+      border-left: 4px solid #c8a000;
+      padding: 10px 14px;
+      margin: 12px 0;
+      font-family: var(--font-mono);
+      font-size: 0.73rem;
+      line-height: 1.65;
+    }
+    .tip-box strong { display: block; margin-bottom: 4px; color: #664400; }
+
+    .note-box {
+      background: #ddeeff;
+      border: 1px solid #0055aa;
+      border-left: 4px solid var(--title-bg);
+      padding: 10px 14px;
+      margin: 12px 0;
+      font-family: var(--font-mono);
+      font-size: 0.73rem;
+      line-height: 1.65;
+    }
+    .note-box strong { display: block; margin-bottom: 4px; color: #000055; }
+
+    .warn-box {
+      background: #fff0e0;
+      border: 1px solid #cc6600;
+      border-left: 4px solid #cc6600;
+      padding: 10px 14px;
+      margin: 12px 0;
+      font-family: var(--font-mono);
+      font-size: 0.73rem;
+      line-height: 1.65;
+      color: #553300;
+    }
+
+    /* Feature grid */
+    .feature-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(195px, 1fr));
+      gap: 1px;
+      background: var(--win-dark);
+      border: 1px solid var(--win-dark);
+      margin: 12px 0;
+    }
+    .feature-cell { background: #f6f6f4; padding: 12px; }
+    .feature-cell .fc-icon { font-size: 1.6rem; margin-bottom: 5px; display: block; }
+    .feature-cell .fc-title {
+      font-family: var(--font-pixel);
+      font-size: 0.9rem;
+      color: var(--title-bg);
+      margin-bottom: 4px;
+    }
+    .feature-cell p { font-size: 0.68rem; color: #444; margin: 0; line-height: 1.6; }
+
+    /* Retro table */
+    .retro-table { width: 100%; border-collapse: collapse; margin: 10px 0; font-size: 0.72rem; }
+    .retro-table th, .retro-table td { border: 1px solid #888; padding: 5px 8px; }
+    .retro-table th { background: var(--title-bg); color: #fff; }
+    .retro-table tr:nth-child(even) { background: #f4f4f4; }
+    .retro-table tr:hover td { background: #e8e8ff; }
+
+    /* FAQ accordion */
+    .faq-list { list-style: none; }
+    .faq-item { border-bottom: 1px solid #ddd; }
+    .faq-q {
+      width: 100%; background: none; border: none;
+      padding: 9px 0; text-align: left;
+      font-family: var(--font-mono); font-size: 0.77rem;
+      cursor: pointer; color: var(--title-bg);
+      display: flex; justify-content: space-between; align-items: center;
+      gap: 8px;
+    }
+    .faq-q:hover { text-decoration: underline; }
+    .faq-q .faq-arrow { flex-shrink: 0; font-size: 0.65rem; transition: transform 0.2s; }
+    .faq-item.open .faq-q .faq-arrow { transform: rotate(180deg); }
+    .faq-a {
+      display: none; padding: 0 0 10px 12px;
+      font-size: 0.73rem; color: #333; line-height: 1.72;
+      border-left: 3px solid var(--title-bg);
+    }
+    .faq-item.open .faq-a { display: block; }
+    .faq-item.open .faq-q { font-weight: bold; color: #000055; }
+
+    /* Sponsors */
+    .sponsor-row { display: flex; gap: 10px; flex-wrap: wrap; margin: 10px 0; }
+    .sponsor-chip {
+      font-family: var(--font-pixel);
+      font-size: 0.82rem;
+      border: 2px solid var(--win-dark);
+      border-top-color: var(--win-darker);
+      border-left-color: var(--win-darker);
+      padding: 5px 14px;
+      background: var(--win-bg);
+      letter-spacing: 1px;
+      white-space: nowrap;
+    }
+    .sponsor-chip.gold {
+      background: #fffae0;
+      border-color: #c8a000;
+      color: #664400;
+    }
+
+    /* Content sections */
+    .content-section { padding-bottom: 10px; }
+    .content-section + .content-section { border-top: 1px dashed #ccc; padding-top: 6px; }
+
+    /* Status bar */
+    .win-status {
+      padding: 2px 5px;
+      border-top: 1px solid var(--win-dark);
+      font-family: var(--font-mono);
+      font-size: 0.63rem;
+      color: #444;
+      display: flex; gap: 6px;
+      flex-shrink: 0;
+    }
+    .status-pane {
+      border-top: 1px solid var(--win-dark); border-left: 1px solid var(--win-dark);
+      border-right: 1px solid var(--win-light); border-bottom: 1px solid var(--win-light);
+      padding: 1px 6px;
+    }
+
+    /* Taskbar */
+    #taskbar {
+      position: fixed; bottom: 0; left: 0; right: 0;
+      height: 34px;
+      background: var(--win-bg);
+      border-top: 2px solid var(--win-light);
+      display: flex; align-items: center;
+      padding: 0 4px; gap: 4px;
+      z-index: 200;
+    }
+    #start-btn {
+      display: flex; align-items: center; gap: 5px;
+      padding: 3px 10px;
+      background: var(--win-face);
+      border-top: 2px solid var(--win-light); border-left: 2px solid var(--win-light);
+      border-right: 2px solid var(--win-darker); border-bottom: 2px solid var(--win-darker);
+      font-family: var(--font-mono); font-size: 0.78rem; font-weight: bold;
+      cursor: pointer; letter-spacing: 0.05em; user-select: none;
+    }
+    #start-btn:hover { background: #d0d0d0; }
+    .taskbar-sep { width: 1px; height: 24px; background: var(--win-dark); margin: 0 3px; }
+    .tb-app-active {
+      display: flex; align-items: center; gap: 5px;
+      padding: 2px 10px;
+      background: #b8b8b8;
+      border-top: 1px solid var(--win-darker); border-left: 1px solid var(--win-darker);
+      border-right: 1px solid var(--win-light); border-bottom: 1px solid var(--win-light);
+      font-family: var(--font-mono); font-size: 0.65rem;
+    }
+    .taskbar-tray {
+      margin-left: auto;
+      display: flex; align-items: center; gap: 6px;
+      padding: 2px 8px;
+      border-top: 1px solid var(--win-darker); border-left: 1px solid var(--win-darker);
+      border-right: 1px solid var(--win-light); border-bottom: 1px solid var(--win-light);
+    }
+    #clock { font-family: var(--font-mono); font-size: 0.71rem; min-width: 58px; text-align: right; }
+
+    /* Responsive */
+    @media (max-width: 640px) {
+      body { padding: 6px 6px 52px; }
+      .toc { display: none; }
+      .help-body { max-height: calc(100vh - 150px); }
+      .help-window { margin-top: 2px; }
+      .help-content { padding: 14px; }
+      .toolbar { display: none; }
+      .feature-grid { grid-template-columns: 1fr 1fr; }
+    }
+  </style>
+</head>
+<body>
+<div class="scanlines"></div>
+<div class="crt-vignette"></div>
+
+<div class="help-window">
+
+  <div class="win-title">
+    <div class="win-title-text">❓ NovaFest '98 Help — Contents</div>
+    <div class="win-controls">
+      <div class="win-btn">_</div>
+      <div class="win-btn">□</div>
+      <div class="win-btn close-btn" onclick="window.location='novaos-index.html'">✕</div>
+    </div>
+  </div>
+
+  <div class="win-menu">
+    <span class="menu-item"><span>F</span>ile</span>
+    <span class="menu-item"><span>E</span>dit</span>
+    <span class="menu-item"><span>B</span>ookmark</span>
+    <span class="menu-item"><span>O</span>ptions</span>
+    <span class="menu-item"><span>H</span>elp</span>
+  </div>
+
+  <div class="toolbar">
+    <a href="novaos-index.html" class="tb-btn">⬅ Back</a>
+    <div class="tb-btn" id="fwdBtn" style="color:#999;">➡ Forward</div>
+    <div class="tb-sep"></div>
+    <a href="novaos-index.html" class="tb-btn">🏠 Home</a>
+    <div class="tb-btn" onclick="window.print()">🖨️ Print</div>
+    <div class="tb-sep"></div>
+    <a href="novaos-index.html" class="tb-btn primary">📝 Register Now</a>
+  </div>
+
+  <div class="help-body">
+
+    <!-- TOC Sidebar -->
+    <div class="toc">
+      <div class="toc-header">📚 Contents</div>
+      <div class="toc-search">
+        <input class="toc-input" type="text" id="tocSearch" placeholder="🔍 Search topics..." oninput="filterTOC(this.value)" />
+      </div>
+      <div class="toc-items" id="tocItems">
+        <div class="toc-item active" data-label="Welcome" onclick="navTo('sec-welcome', this)">📄 Welcome</div>
+        <div class="toc-item" data-label="Features" onclick="navTo('sec-features', this)">⚡ Features</div>
+        <div class="toc-sub toc-item" data-label="Hackathon" onclick="navTo('sec-hackathon', this)">↳ Hackathon Rules</div>
+        <div class="toc-sub toc-item" data-label="Workshops" onclick="navTo('sec-workshops', this)">↳ Workshops</div>
+        <div class="toc-sub toc-item" data-label="Keynotes" onclick="navTo('sec-keynotes', this)">↳ Keynotes</div>
+        <div class="toc-item" data-label="Passes" onclick="navTo('sec-passes', this)">🎟️ Pass Types</div>
+        <div class="toc-item" data-label="FAQ" onclick="navTo('sec-faq', this)">❓ FAQ</div>
+        <div class="toc-item" data-label="Sponsors" onclick="navTo('sec-sponsors', this)">🤝 Sponsors</div>
+        <div class="toc-item" data-label="Contact" onclick="navTo('sec-contact', this)">✉️ Contact</div>
+      </div>
+    </div>
+
+    <!-- Content -->
+    <div class="help-content" id="helpContent">
+
+      <div id="sec-welcome" class="content-section">
+        <h1>⚡ Nova Tech Fest 1998 — Help Guide</h1>
+        <p>Welcome to the official help documentation for <strong>Nova Tech Fest 1998</strong>. This guide contains everything you need to know about the event — from pass types to workshop schedules to frequently asked questions.</p>
+        <div class="note-box">
+          <strong>ℹ️ Quick Info</strong>
+          NovaFest '98 runs <strong>September 12–14, 1998</strong> at the Silicon Valley Convention Center, CA.<br/>Theme: <em>"Beyond the Browser."</em> Prize Pool: <strong>$50,000 USD</strong>.
+        </div>
+        <p>Use the Contents panel on the left to jump to any section, or scroll down to read everything. Click <strong>Register Now</strong> in the toolbar when you're ready to sign up.</p>
+      </div>
+
+      <div id="sec-features" class="content-section">
+        <h2>⚡ What's at NovaFest '98?</h2>
+        <p>NovaFest '98 is three days packed with hands-on sessions, competitive hacking, and the sharpest minds in tech. Here's a complete overview of what's on offer:</p>
+        <div class="feature-grid">
+          <div class="feature-cell">
+            <span class="fc-icon">💻</span>
+            <div class="fc-title">48-Hour Hackathon</div>
+            <p>Build anything. Win $30,000. Teams of 1–4. Any stack, any idea.</p>
+          </div>
+          <div class="feature-cell">
+            <span class="fc-icon">🎤</span>
+            <div class="fc-title">Keynote Talks</div>
+            <p>4 world-class speakers across 3 days in the main hall.</p>
+          </div>
+          <div class="feature-cell">
+            <span class="fc-icon">🔩</span>
+            <div class="fc-title">Workshops</div>
+            <p>Hardware hacking, Linux, networking, Perl, C++ games & more.</p>
+          </div>
+          <div class="feature-cell">
+            <span class="fc-icon">🌐</span>
+            <div class="fc-title">Open Source Expo</div>
+            <p>20 live project demos. Community vote. $5K grant prize.</p>
+          </div>
+          <div class="feature-cell">
+            <span class="fc-icon">🍕</span>
+            <div class="fc-title">Free Food &amp; Drinks</div>
+            <p>Pizza, soda, and coffee provided for all attendees. All three days.</p>
+          </div>
+          <div class="feature-cell">
+            <span class="fc-icon">🏆</span>
+            <div class="fc-title">$50K Prize Pool</div>
+            <p>Across hackathon, open source showcase, and side competitions.</p>
+          </div>
+        </div>
+      </div>
+
+      <div id="sec-hackathon" class="content-section">
+        <h2>💻 The Hackathon</h2>
+        <p>The NovaFest Hackathon is the main event. 48 hours. Any project. Any stack. You can build a desktop app, web tool, hardware hack, command-line utility — whatever you can dream up and ship.</p>
+        <div class="tip-box">
+          <strong>💡 Tip from the Judges</strong>
+          The 1997 winning project was a distributed file-sharing tool over IRC. Think outside the box. Judges reward <em>originality and scope</em> above polish. Ship something weird.
+        </div>
+        <h3>Rules</h3>
+        <ul>
+          <li>Teams of 1–4 people (solo hackers welcome)</li>
+          <li>All code must be written during the event — no pre-built projects</li>
+          <li>Open source tools, libraries, and APIs are allowed</li>
+          <li>Presentations: 5 minutes + 3 minutes Q&amp;A</li>
+          <li>Judged on: Innovation · Technical Depth · Presentation · Real-World Impact</li>
+        </ul>
+        <h3>Prize Breakdown</h3>
+        <table class="retro-table">
+          <tr><th>Place</th><th>Prize</th><th>Trophy</th></tr>
+          <tr><td>🥇 1st Place</td><td>$30,000</td><td>Golden Floppy Disk</td></tr>
+          <tr><td>🥈 2nd Place</td><td>$12,000</td><td>Silver CD-ROM</td></tr>
+          <tr><td>🥉 3rd Place</td><td>$5,000</td><td>Bronze Keyboard</td></tr>
+          <tr><td>🏅 Best Design</td><td>$2,000</td><td>Pixel Art Trophy</td></tr>
+          <tr><td>🏅 Most Creative</td><td>$1,000</td><td>Bragging Rights</td></tr>
+        </table>
+        <div class="note-box">
+          <strong>📌 Student Track</strong>
+          High school and university students compete in a separate judged category with dedicated prizes. Mention your student status at registration.
+        </div>
+      </div>
+
+      <div id="sec-workshops" class="content-section">
+        <h2>🔩 Workshops</h2>
+        <p>All workshops are included with <strong>Hacker</strong> and <strong>VIP All-Access</strong> passes. General Admission attendees can purchase individual workshop tokens for $10 each at the registration desk.</p>
+        <table class="retro-table">
+          <tr><th>Workshop</th><th>Day</th><th>Time</th><th>Room</th><th>Level</th></tr>
+          <tr><td>Hardware Hacking 101</td><td>Day 1</td><td>2:00 PM</td><td>B</td><td>Beginner</td></tr>
+          <tr><td>Building a Linux Distro</td><td>Day 1</td><td>4:00 PM</td><td>C</td><td>Advanced</td></tr>
+          <tr><td>Perl Web Scripting</td><td>Day 2</td><td>10:00 AM</td><td>B</td><td>Intermediate</td></tr>
+          <tr><td>Networking &amp; TCP/IP Deep Dive</td><td>Day 2</td><td>2:00 PM</td><td>C</td><td>Advanced</td></tr>
+          <tr><td>Making Games in C++</td><td>Day 3</td><td>10:00 AM</td><td>B</td><td>Intermediate</td></tr>
+          <tr><td>Y2K Prep for Developers</td><td>Day 3</td><td>1:00 PM</td><td>Main</td><td>All Levels</td></tr>
+        </table>
+        <div class="warn-box">
+          ⚠️ <strong>Seats Limited:</strong> Workshop capacity is 30 per session. Reserve your spot at the registration desk on arrival — first come, first served. No advance booking available.
+        </div>
+      </div>
+
+      <div id="sec-keynotes" class="content-section">
+        <h2>🎤 Keynote Speakers</h2>
+        <table class="retro-table">
+          <tr><th>Speaker</th><th>Title / Topic</th><th>Day</th><th>Time</th></tr>
+          <tr><td><strong>Dr. Ada Novak</strong></td><td>Beyond the Browser: What Comes Next</td><td>Day 1</td><td>09:30 AM</td></tr>
+          <tr><td><strong>Riku Tanaka</strong></td><td>The Open Source Revolution</td><td>Day 1</td><td>05:00 PM</td></tr>
+          <tr><td><strong>Sam Petrova</strong></td><td>Surviving Y2K as a Developer</td><td>Day 2</td><td>11:00 AM</td></tr>
+          <tr><td><strong>Lin Wei</strong></td><td>Neural Nets: Not Just Hype</td><td>Day 3</td><td>10:00 AM</td></tr>
+        </table>
+        <p>All keynotes held in the <strong>Main Hall</strong> (capacity: 500). Doors open 15 minutes before start. All sessions recorded and available via BBS within 48 hours of delivery.</p>
+        <div class="tip-box">
+          <strong>📡 BBS Access</strong>
+          Connect to novabbs.net on Port 23 with any terminal emulator to access keynote recordings, event updates, and the attendee bulletin board.
+        </div>
+      </div>
+
+      <div id="sec-passes" class="content-section">
+        <h2>🎟️ Pass Types &amp; Pricing</h2>
+        <table class="retro-table">
+          <tr><th>Pass</th><th>Price</th><th>Includes</th></tr>
+          <tr><td>🎫 General Admission</td><td>$49</td><td>All keynotes, expo floor, opening ceremony, free meals</td></tr>
+          <tr><td>💻 Hacker Pass</td><td>$99</td><td>Everything above + Hackathon entry + all 6 workshops</td></tr>
+          <tr><td>⭐ VIP All-Access</td><td>$199</td><td>Everything above + speaker dinner + priority seating + swag bag</td></tr>
+        </table>
+        <div class="note-box">
+          <strong>🐦 Early Bird Discount</strong>
+          Register before <strong>August 1, 1998</strong> to receive 20% off any pass type.<br/>Use promo code: <code style="background:#eee; padding:1px 5px; font-family:var(--font-mono);">NOVAEARLY98</code>
+        </div>
+        <div class="tip-box">
+          <strong>👨‍👩‍👧 Group Discounts</strong>
+          Groups of 5 or more receive an additional 10% off all pass types. Contact us to arrange group booking.
+        </div>
+      </div>
+
+      <div id="sec-faq" class="content-section">
+        <h2>❓ Frequently Asked Questions</h2>
+        <ul class="faq-list">
+          <li class="faq-item">
+            <button class="faq-q">Can I attend as an individual or do I need a team? <span class="faq-arrow">▼</span></button>
+            <div class="faq-a">You can attend solo. You can also form a team of up to 4 people. Solo hackers are eligible for all prizes. We also have a team-matching board at the venue if you want to find teammates on the day of the event.</div>
+          </li>
+          <li class="faq-item">
+            <button class="faq-q">Is there a minimum age to attend? <span class="faq-arrow">▼</span></button>
+            <div class="faq-a">NovaFest is open to all ages. Attendees under 18 must have written consent from a parent or guardian. We welcome high school students and have a dedicated Student Hacker category in the hackathon with separate prizes.</div>
+          </li>
+          <li class="faq-item">
+            <button class="faq-q">What should I bring? <span class="faq-arrow">▼</span></button>
+            <div class="faq-a">Bring your laptop (or desktop if you're brave), a power strip, any hardware you plan to hack with, and your government-issued ID for check-in. We provide tables, chairs, power outlets, and 56K dial-up internet access for all participants.</div>
+          </li>
+          <li class="faq-item">
+            <button class="faq-q">Is the venue wheelchair accessible? <span class="faq-arrow">▼</span></button>
+            <div class="faq-a">Yes. The Silicon Valley Convention Center is fully accessible. Accessible parking is available in Lot C. Please contact us in advance if you require any specific accommodations and we will do our best to arrange them.</div>
+          </li>
+          <li class="faq-item">
+            <button class="faq-q">Can I get a refund if I can't attend? <span class="faq-arrow">▼</span></button>
+            <div class="faq-a">Full refunds are available up to 30 days before the event (August 12, 1998). After that date, we can transfer your pass to another person at no charge. No refunds are available within 7 days of the event.</div>
+          </li>
+          <li class="faq-item">
+            <button class="faq-q">Will there be internet access at the venue? <span class="faq-arrow">▼</span></button>
+            <div class="faq-a">Yes. We have 20 dedicated 56K dial-up lines for hackathon participants, plus a T1 connection in the main lab wing (Lab Wing A). Internet access is included with all pass types at no extra cost.</div>
+          </li>
+          <li class="faq-item">
+            <button class="faq-q">Is food and accommodation provided? <span class="faq-arrow">▼</span></button>
+            <div class="faq-a">Meals (pizza, drinks, coffee) are provided for all attendees throughout the three days. Accommodation is not provided — we recommend nearby hotels on University Ave or downtown San Jose. A room-sharing board will be available on the BBS before the event.</div>
+          </li>
+        </ul>
+      </div>
+
+      <div id="sec-sponsors" class="content-section">
+        <h2>🤝 Our Sponsors</h2>
+        <p>NovaFest '98 is made possible by the generous support of our sponsors. Interested in sponsoring? E-mail <strong>sponsors@novafest98.net</strong>.</p>
+        <h3>Gold Sponsors</h3>
+        <div class="sponsor-row">
+          <div class="sponsor-chip gold">⚡ NOVA LABS</div>
+          <div class="sponsor-chip gold">💾 DISKETTE CO.</div>
+          <div class="sponsor-chip gold">🖥️ NOVA SILICON</div>
+        </div>
+        <h3>Silver Sponsors</h3>
+        <div class="sponsor-row">
+          <div class="sponsor-chip">🌐 WEBWORKS INC</div>
+          <div class="sponsor-chip">📡 DIALNET</div>
+          <div class="sponsor-chip">🔧 TOOLS &amp; CO</div>
+          <div class="sponsor-chip">📰 NOVA QUARTERLY</div>
+        </div>
+      </div>
+
+      <div id="sec-contact" class="content-section">
+        <h2>✉️ Contact &amp; Support</h2>
+        <table class="retro-table">
+          <tr><th>Channel</th><th>Details</th></tr>
+          <tr><td>📧 E-Mail</td><td>info@novafest98.net</td></tr>
+          <tr><td>☎️ Phone</td><td>(415) 555-0198 · Mon–Fri 9AM–5PM PST</td></tr>
+          <tr><td>📠 Fax</td><td>(415) 555-0199</td></tr>
+          <tr><td>🌐 BBS</td><td>novabbs.net · Port 23 · 24/7</td></tr>
+          <tr><td>📮 Mailing</td><td>NovaFest '98, PO Box 1998, San Jose CA 95101</td></tr>
+        </table>
+        <div style="margin-top: 24px; text-align:center; padding-bottom: 10px;">
+          <a href="novaos-index.html" style="display:inline-block; font-family:var(--font-mono); font-size:0.78rem; padding:7px 24px; background:var(--title-bg); color:#fff; text-decoration:none; border-top:2px solid #5060b0; border-left:2px solid #5060b0; border-right:2px solid #000020; border-bottom:2px solid #000020; letter-spacing: 0.05em;">
+            ← Back to Desktop
+          </a>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="win-status">
+    <span class="status-pane">NovaFest '98 Help System v1.0</span>
+    <span class="status-pane" id="statusSection">Welcome</span>
+    <span class="status-pane">Last Updated: Sep 1, 1998</span>
+  </div>
+
+</div>
+
+<!-- TASKBAR -->
+<div id="taskbar">
+  <div id="start-btn" onclick="window.location='novaos-index.html'">
+    <span style="font-size:1rem;">🪟</span> <strong>Start</strong>
+  </div>
+  <div class="taskbar-sep"></div>
+  <div class="tb-app-active">❓ NovaFest '98 Help</div>
+  <div class="taskbar-tray">
+    <span>📡</span>
+    <div id="clock">12:00 PM</div>
+  </div>
+</div>
+
+<script>
+  // Clock
+  function updateClock() {
+    const now = new Date();
+    let h = now.getHours(), m = now.getMinutes();
+    const ampm = h >= 12 ? 'PM' : 'AM';
+    h = h % 12 || 12;
+    document.getElementById('clock').textContent = `${h}:${String(m).padStart(2,'0')} ${ampm}`;
+  }
+  updateClock(); setInterval(updateClock, 1000);
+
+  // TOC navigation
+  function navTo(id, el) {
+    const target = document.getElementById(id);
+    if (!target) return;
+    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    document.querySelectorAll('.toc-item').forEach(i => i.classList.remove('active'));
+    el.classList.add('active');
+    const label = el.dataset.label || id.replace('sec-', '');
+    document.getElementById('statusSection').textContent = label;
+  }
+
+  // TOC search filter
+  function filterTOC(val) {
+    const v = val.toLowerCase();
+    document.querySelectorAll('.toc-item').forEach(item => {
+      const label = (item.dataset.label || item.textContent).toLowerCase();
+      item.style.display = (!v || label.includes(v)) ? '' : 'none';
+    });
+  }
+
+  // Scroll spy — update active TOC item on scroll
+  const helpContent = document.getElementById('helpContent');
+  const sections = ['sec-welcome','sec-features','sec-hackathon','sec-workshops','sec-keynotes','sec-passes','sec-faq','sec-sponsors','sec-contact'];
+
+  helpContent.addEventListener('scroll', () => {
+    let current = sections[0];
+    sections.forEach(id => {
+      const el = document.getElementById(id);
+      if (el && el.offsetTop - helpContent.scrollTop <= 60) current = id;
+    });
+    document.querySelectorAll('.toc-item').forEach(item => {
+      item.classList.remove('active');
+      const label = (item.dataset.label || '').toLowerCase();
+      const secLabel = current.replace('sec-', '').toLowerCase();
+      if (label === secLabel || secLabel.startsWith(label.replace(/\s/g,''))) {
+        item.classList.add('active');
+        document.getElementById('statusSection').textContent = item.dataset.label || current;
+      }
+    });
+  });
+
+  // FAQ accordion
+  document.querySelectorAll('.faq-item').forEach(item => {
+    const btn = item.querySelector('.faq-q');
+    btn.addEventListener('click', () => {
+      const wasOpen = item.classList.contains('open');
+      // Close all
+      document.querySelectorAll('.faq-item').forEach(i => i.classList.remove('open'));
+      // Open clicked if it was closed
+      if (!wasOpen) item.classList.add('open');
+    });
+  });
+</script>
+</body>
+</html>
