@@ -30,24 +30,24 @@ Shut Down easter egg in the Start Menu
 Help Viewer — novaos-about.html 
 Styled exactly like a Windows 98 Help viewer: 
 
-Sidebar TOC with scroll spy — active section highlights as you scroll 
+Sidebar TOC with scroll spy — active section highlights as you scroll  
 6 content sections — Welcome, Features grid, Hackathon rules & prizes, Workshops schedule, Keynotes, Pass types, FAQ, Sponsors, Contact 
 FAQ accordion — click to expand, others auto-close 
-Tip / Note / Warning boxes in classic yellow, blue, and orange 
-Toolbar with Back, Home, Print, and Register Now buttons  
+Tip / Note / Warning boxes in classic yellow, blue, and orange  
+Toolbar with Back, Home, Print, and Register Now buttons   
 
 
 Features:
-->Boot animation with a progress bar, live percentage counter, and BIOS-style hardware log 
-->Draggable windows with full mouse and touch support 
-->Window focus system where the active window gets a blue gradient title bar and inactive ones go grey 
-->Live taskbar clock that updates every second 
-->Start Menu with app shortcuts and a working Shut Down easter egg 
-->CRT scanline effect and radial vignette overlay across the entire page 
-->Notepad-style registration form with a success dialog popup 
-->Scroll spy TOC that auto-highlights the current section while scrolling 
-->FAQ accordion with smooth open/close and arrow rotation animation 
-->Fully mobile responsive layout for phones and tablets 
+ ->Boot animation with a progress bar, live percentage counter, and BIOS-style hardware log   
+ ->Draggable windows with full mouse and touch support  
+ ->Window focus system where the active window gets a blue gradient title bar and inactive ones go grey  
+ ->Live taskbar clock that updates every second 
+ ->Start Menu with app shortcuts and a working Shut Down easter egg 
+ ->CRT scanline effect and radial vignette overlay across the entire page 
+ ->Notepad-style registration form with a success dialog popup  
+ ->Scroll spy TOC that auto-highlights the current section while scrolling  
+ ->FAQ accordion with smooth open/close and arrow rotation animation  
+ ->Fully mobile responsive layout for phones and tablets  
 
 
 🛠️ Tech Stack 
