@@ -62,8 +62,8 @@ NovaOS/
 ├── novaos-index.html   ← Main desktop page
 └── novaos-about.html   ← Help viewer page
 
-Getting Started
-View locally
+Getting Started 
+View locally 
 
 1)Clone the repo:
 
@@ -71,26 +71,26 @@ View locally
   git clone https://github.com/ShreyaLbs/NovaOS.git
 ```
 
-2)Open novaos-index.html in your browser — or use VS Code Live Server 
+2)Open novaos-index.html in your browser — or use VS Code Live Server  
 
-No build step needed 
-This is pure HTML/CSS/JS — just open and run. 
+No build step needed  
+This is pure HTML/CSS/JS — just open and run.  
 
 Design Highlights 
 
 Authentic Win98 aesthetics — silver #c0c0c0 chrome, navy #000080 title bars, inset borders  
-VT323 pixel font for all retro display text  
-Share Tech Mono for system UI elements  
-CRT scanlines via repeating-linear-gradient  
-Glow pulse animation on the boot logo  
-Window open animation — subtle scale + fade on spawn  
+VT323 pixel font for all retro display text   
+Share Tech Mono for system UI elements   
+CRT scanlines via repeating-linear-gradient   
+Glow pulse animation on the boot logo   
+Window open animation — subtle scale + fade on spawn   
 
 
 Event Details:
 
-Nova Tech Fest 1998 · September 12–14, 1998 
-Silicon Valley Convention Center, CA 
-Theme: "Beyond the Browser" · Prize Pool: $50,000 USD 
+Nova Tech Fest 1998 · September 12–14, 1998  
+Silicon Valley Convention Center, CA  
+Theme: "Beyond the Browser" · Prize Pool: $50,000 USD  
 
 
 Author 
