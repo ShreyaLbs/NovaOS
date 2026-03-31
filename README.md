@@ -10,7 +10,9 @@ OUTPUT:
 <img width="1920" height="1080" alt="image" src="https://github.com/user-attachments/assets/23432931-b4be-4fc1-957c-6f991cea69b7" />
 
 Live Demo: 
+```bash
 shreyalbs.github.io/NovaOS/
+```
 
 Overview   
 NovaOS 98 is a fully interactive Windows 98 desktop simulation built as an event website for Nova Tech Fest 1998 — a fictional retro hackathon. Every detail is designed to feel authentic to the late 90s computing era, from the CRT scanline overlay to the chunky inset window borders.
