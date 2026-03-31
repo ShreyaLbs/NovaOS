@@ -2,20 +2,20 @@ NovaOS 98 — Nova Tech Fest Event Website
 
 A retro Windows 98-styled hackathon event website built with pure HTML, CSS, and JavaScript.
 
-OUTPUT:
+OUTPUT:  
 <img width="1920" height="1080" alt="Screenshot (665)" src="https://github.com/user-attachments/assets/c67e7ee2-97f9-403b-96a9-5d59fd74c662" />
 <img width="1920" height="1080" alt="Screenshot (666)" src="https://github.com/user-attachments/assets/f1d65dd7-22fa-4d8a-ab16-ce1d24e1cb13" />
 <img width="1920" height="1080" alt="Screenshot (669)" src="https://github.com/user-attachments/assets/85b6d275-77a2-4125-98ce-473a961f2c48" />
 <img width="1920" height="1080" alt="Screenshot (668)" src="https://github.com/user-attachments/assets/be0e19ec-b497-4e81-92da-519f9d5f12b1" />
 <img width="1920" height="1080" alt="image" src="https://github.com/user-attachments/assets/23432931-b4be-4fc1-957c-6f991cea69b7" />
 
-Live Demo
+Live Demo: 
 shreyalbs.github.io/NovaOS/
 
-Overview
+Overview   
 NovaOS 98 is a fully interactive Windows 98 desktop simulation built as an event website for Nova Tech Fest 1998 — a fictional retro hackathon. Every detail is designed to feel authentic to the late 90s computing era, from the CRT scanline overlay to the chunky inset window borders.
 
- Pages
+Pages  
 Desktop — novaos-index.html
 The main OS desktop experience:
 
@@ -53,11 +53,13 @@ NovaOS/
 Getting Started
 View locally
 
-Clone the repo:
+1)Clone the repo:
 
-bash   git clone https://github.com/ShreyaLbs/NovaOS.git
+ ```bash
+  git clone https://github.com/ShreyaLbs/NovaOS.git
+```
 
-Open novaos-index.html in your browser — or use VS Code Live Server
+2)Open novaos-index.html in your browser — or use VS Code Live Server
 
 No build step needed
 This is pure HTML/CSS/JS — just open and run.
